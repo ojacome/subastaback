@@ -1,0 +1,10 @@
+{
+    "type": "mysql",
+    "host": "localhost",
+    "port": 3306,
+    "username": "fundacion_admin",
+    "password": "fundacion_pass",
+    "database": "fundacion_db",
+    "synchronize": true,
+    "entities": ["dist/models/**/*.js"]
+ }
