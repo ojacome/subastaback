@@ -2,17 +2,27 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 
 
 @Entity()
-export class Product {
+export class User {
 
   @PrimaryGeneratedColumn()
   id: number;
 
 
-  @Column()
-  name: string;
 
   @Column()
-  description: string;
+  fullName: string;
+
+  @Column()
+  email: string;
+
+  @Column()
+  address: string;
+
+  @Column()
+  phone: string;
+
+  @Column({ default: false})
+  isAdmin: boolean
 
   @Column({ default: true})
   isActive: boolean
