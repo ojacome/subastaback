@@ -1,4 +1,5 @@
-import { PrimaryGeneratedColumn, Column, Entity } from 'typeorm';
+import { PrimaryGeneratedColumn, Column, Entity, ManyToOne } from 'typeorm';
+import { Product } from './product.model';
 
 
 
@@ -11,8 +12,11 @@ export class ImageProduct {
   @Column()
   filename: string;    
 
-//   @ManyToOne(type => Incidence , incidence => incidence.files)
-//   incidence: Incidence;
+
+
+
+  @ManyToOne(type => Product , product => product.images)
+  product: Product;
 
 }
 

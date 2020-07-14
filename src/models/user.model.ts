@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany } from "typeorm";
+import { Sale } from "./sale.model";
 
 
 @Entity()
@@ -39,4 +40,10 @@ export class User {
 
   @DeleteDateColumn({ type: "datetime"}) 
   deletedAt: Date;
+
+
+
+
+  @OneToMany(type => Sale, sale => sale.user)
+  sales: Sale[];
 }

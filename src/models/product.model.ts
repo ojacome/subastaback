@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany } from "typeorm";
+import { ImageProduct } from "./image_product.model";
 
 
 @Entity()
@@ -29,4 +30,11 @@ export class Product {
 
   @DeleteDateColumn({ type: "datetime"}) 
   deletedAt: Date;
+
+
+
+
+
+  @OneToMany(type => ImageProduct, image => image.product)
+  images: ImageProduct[];
 }

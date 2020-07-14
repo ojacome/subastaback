@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, Double } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, Double, ManyToOne, OneToOne, JoinColumn } from "typeorm";
+import { User } from "./user.model";
+import { Product } from "./product.model";
 
 export enum Status {        
     EnProceso = 'e',
@@ -34,4 +36,14 @@ export class Sale {
 
   @DeleteDateColumn({ type: "datetime"}) 
   deletedAt: Date;
+
+
+
+
+  @ManyToOne(type => User , user => user.sales)
+  user: User;
+
+  @OneToOne(type => Product)
+    @JoinColumn()
+    product: Product;
 }
