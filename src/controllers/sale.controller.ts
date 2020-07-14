@@ -1,0 +1,284 @@
+import { Request, Response } from "express";
+import { EntityRepository, Repository, getRepository, DeleteResult } from "typeorm";
+import { Sale, Status } from "../models/sale.model";
+import { User } from "../models/user.model";
+import { Product } from "../models/product.model";
+
+
+@EntityRepository(Sale)
+export class SaleController extends Repository<Sale>  {
+
+
+
+
+	/**
+     * Consultar todas las subastas en cualquier estado
+     *
+     * @param {Request} req
+     * @param {Response} res
+     * @memberof SaleController
+     */
+    public async indexSale(req: Request, res: Response) {
+
+        await getRepository(Sale).find()
+            .then((sales: Sale[]) => {
+
+                if (sales.length === 0) {
+                    return res.status(404).json({
+                            ok: false,
+                            message: 'No se encontraron registros'
+                        })
+                } else {
+                    res.status(200).json({
+                            ok: true,
+                            sales
+                        })
+                }
+
+            })
+            .catch((err: Error) => {
+                return res.status(500).json({
+                    ok: false,
+                    message: "Error al obtener todas las subastas",
+                    error: err.message
+                })
+            });
+    }
+
+	/**
+     * Crear Subasta
+     *
+     * @param {Request} req
+     * @param {Response} res
+     * @memberof SaleController
+     */
+    public async createSale(req: Request, res: Response) {
+
+        let { productId, userId, total} = req.body;
+        
+
+
+        //obtener userId del token        
+
+        let userRepo = getRepository(User);
+		let user: User | undefined = await userRepo.findOne({ id: userId });
+		if (!user || user === undefined) {
+
+			return res.status(404).json({
+				ok: false,
+				message: `No se encontró un Usuario para el id: ${userId}`,
+			});
+        }
+        
+        let productRepo = getRepository(Product);
+		let product: Product | undefined = await productRepo.findOne({ id: productId });
+		if (!product || product === undefined) {
+
+			return res.status(404).json({
+				ok: false,
+				message: `No se encontró un Producto para el id: ${productId}`,
+			});
+		}
+
+
+
+        let saleRepo = getRepository(Sale);
+
+        
+        let newSale = new Sale();
+
+        newSale.status = Status.EnProceso;
+        newSale.total = total;
+        newSale.product = product;
+        newSale.user = user;
+        
+
+        // //Validaciones
+        // const errorsCac = await validate(newCac);
+
+        // if (errorsCac.length > 0) {
+        //     return res.status(400).json({
+        //         ok: false,
+        //         errors: {
+        //             validation: true,
+        //             error: errorsCac
+        //         }
+        //     })
+        // }
+
+        await saleRepo.save(newSale)
+            .then(async (saleCreated: Sale) => {
+
+                if (!saleCreated) {
+                    return res.status(409).json({
+                            ok: false,
+                            message: "No se pudo crear la subasta"
+                        });
+                }
+
+                res.status(201).json({
+                        ok: true,
+                        sale: saleCreated
+                    });
+
+            }).catch((err: Error) => {
+
+                return res.status(500).json({
+                        ok: false,
+                        message: "Error al crear la subasta",
+                        error: err.message
+                    });
+
+            });
+    }
+
+	/**
+     * Consultar por ID
+     *
+     * @param {Request} req
+     * @param {Response} res
+     * @memberof SaleController
+     */
+    public async showSale(req: Request, res: Response) {
+
+        const saleId: number = Number(req.params.id);
+
+        let saleRepo = getRepository(Sale);
+
+        await saleRepo.findOne({id: saleId})
+            .then((sale: Sale | undefined) => {
+
+                if (!sale || sale === undefined) {
+                    return res.status(404).json({
+                            ok: false,
+                            error: `No se encontró una subasta para el id ${saleId}`
+                        });
+                }
+
+                res.status(200).json({
+                        ok: true,
+                        sale
+                    });
+
+
+            }).catch((err: Error) => {
+
+                return res.status(500).json({
+                        ok: false,
+                        message: 'Error al buscar la subasta',
+                        error: err.message
+                    })
+
+            });
+    }
+
+	/**
+     * Actualizar por ID
+     *
+     * @param {Request} req
+     * @param {Response} res
+     * @memberof SaleController
+     */
+    public async updateSale(req: Request, res: Response) {
+
+        let saleId: number = Number(req.params.id);
+        let { userId, productId, total } = req.body;
+
+        //obtener userId del token        
+
+        let userRepo = getRepository(User);
+		let user: any = await userRepo.findOne({ id: userId });
+		if (!user || user === undefined) {
+
+			return res.status(404).json({
+				ok: false,
+				message: `No se encontró un Usuario para el id: ${userId}`,
+			});
+        }
+        
+        let productRepo = getRepository(Product);
+		let product: any = await productRepo.findOne({ id: productId });
+		if (!product || product === undefined) {
+
+			return res.status(404).json({
+				ok: false,
+				message: `No se encontró un Producto para el id: ${productId}`,
+			});
+        }
+        
+        let saleRepo = getRepository(Sale);
+
+        await saleRepo.findOne({id: saleId})
+            .then(async (sale: Sale | undefined) => {
+
+                if (!sale) {
+                    return res.status(404).json({
+                            ok: false,
+                            message: `No se encontró subasta con el id: ${saleId}`
+                        });
+                }
+
+                sale.total = total;
+                sale.status = Status.Finalizado;
+                sale.product = product;
+                sale.user = user;
+
+
+                //Validaciones
+                // const errorsCac = await validate(sale);
+        
+                // if (errorsCac.length > 0) {
+                //     return res.status(400).json({
+                //         ok: false,
+                //         errors: {
+                //             validation: true,
+                //             error: errorsCac
+                //         }
+                //     })
+                // }
+
+                await saleRepo.save(sale)
+                    .then((saleUpdate: Sale) => {
+
+                        if (!saleUpdate) {
+
+                            return res.status(409).json({
+                                    ok: false,
+                                    message: "No se pudo actualizar la subasta",
+                                });
+
+                        }
+
+                        res.status(201).json({
+                                ok: true,
+                                sale: saleUpdate
+
+                            })
+
+                    }).catch((err: Error) => {
+
+                        return res.status(500).json({
+                                ok: false,
+                                message: "Error al actualizar la subasta",
+                                error: err.message
+                            });
+
+                    });
+
+            }).catch((err: Error) => {
+
+                return res.status(500).json({
+                        ok: false,
+                        error: {
+                            message: "Error al buscar subasta a actualizar",
+                            error: err.message
+                        }
+                    });
+
+            });
+
+    }
+	
+
+    
+}
