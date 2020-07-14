@@ -11,22 +11,22 @@ export class User {
 
 
   @Column()
+  email: string;
+  
+  @Column()
+  password: string;
+  
+  @Column({nullable: true})
   fullName: string;
 
-  @Column()
-  email: string;
-
-  @Column()
+  @Column({nullable: true})
   address: string;
 
-  @Column()
+  @Column({nullable: true})
   phone: string;
 
   @Column({ default: false})
   isAdmin: boolean
-
-  @Column({ default: true})
-  isActive: boolean
 
 
 

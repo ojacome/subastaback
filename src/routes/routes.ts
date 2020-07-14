@@ -1,5 +1,6 @@
 import {Router, Request, Response} from 'express';
-import prodRoute from './product.routes'
+import prodRoute from './product.routes';
+import userRoute from './user.routes';
 
 
 const router = Router()
@@ -21,6 +22,6 @@ router.get('/', (req: Request,res: Response) => {
 // router.use('/login', loginRoute);
 router.use('/products', prodRoute);
 // router.use('/sales', socketsRoute);
-// router.use('/users', roleRoute);
+router.use('/users', userRoute);
 
 export default router;
