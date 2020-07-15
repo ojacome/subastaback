@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { EntityRepository, Repository, getRepository, DeleteResult } from "typeorm";
 import { Product } from "../models/product.model";
+import { ImageProduct } from "../models/image_product.model";
+import path from "path";
+import fs from "fs";
 
 
 @EntityRepository(Product)
@@ -86,6 +89,25 @@ export class ProductController extends Repository<Product>  {
                             message: "No se pudo crear el producto"
                         });
                 }
+
+
+                //asociar las imagenes al producto
+                let imageRepos = getRepository(ImageProduct);
+                let imgFiles: any = req.files;
+                
+                if (imgFiles.length) {
+       
+                    imgFiles.forEach(async (file: Express.Multer.File) => {
+                        // console.log(file)
+                        let img = new ImageProduct();
+                        img.filename = file.filename;
+                        img.product = productCreated;
+                        await imageRepos.save(img);
+                    })
+       
+                }
+
+
 
                 res.status(201).json({
                         ok: true,
@@ -295,5 +317,26 @@ export class ProductController extends Repository<Product>  {
             })
     }
 
-    
+    /**
+     * Obtener imagen por fileName 
+     *
+     * @param {Request} req
+     * @param {Response} res
+     * @memberof ProductController
+     */
+    public downloadImg(req: Request, res: Response) {
+
+		let img = req.params.img;
+
+		let pathImg = path.resolve(__dirname, `../uploads/products/${img}`);
+
+		//verificar si existe la imagen
+		if (fs.existsSync(pathImg)) {
+			res.sendFile(pathImg);
+		} else {
+			let imgDefault = path.resolve(__dirname, '../uploads/products/no-img.png');
+			res.sendFile(imgDefault);
+		}
+
+	}
 }
