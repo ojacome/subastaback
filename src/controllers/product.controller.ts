@@ -21,7 +21,7 @@ export class ProductController extends Repository<Product>  {
      */
     public async indexProduc(req: Request, res: Response) {
 
-        await getRepository(Product).find()
+        await getRepository(Product).find({relations: ["images"]})
             .then((products: Product[]) => {
 
                 if (products.length === 0) {
@@ -138,7 +138,7 @@ export class ProductController extends Repository<Product>  {
 
         let productRepo = getRepository(Product);
 
-        await productRepo.findOne({id: productId})
+        await productRepo.findOne({id: productId},{relations: ["images"]})
             .then((product: Product | undefined) => {
 
                 if (!product || product === undefined) {

@@ -119,7 +119,7 @@ export class UserController extends Repository<User>  {
 
         let userRepo = getRepository(User);
 
-        await userRepo.findOne({id: userId})
+        await userRepo.findOne({id: userId},{relations: ["sales"]})
             .then((user: User | undefined) => {
 
                 if (!user || user === undefined) {

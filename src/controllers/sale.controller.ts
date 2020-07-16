@@ -20,7 +20,7 @@ export class SaleController extends Repository<Sale>  {
      */
     public async indexSale(req: Request, res: Response) {
 
-        await getRepository(Sale).find()
+        await getRepository(Sale).find({relations: ["user","product"]})
             .then((sales: Sale[]) => {
 
                 if (sales.length === 0) {
@@ -145,7 +145,7 @@ export class SaleController extends Repository<Sale>  {
 
         let saleRepo = getRepository(Sale);
 
-        await saleRepo.findOne({id: saleId})
+        await saleRepo.findOne({id: saleId},{relations: ["user","product"]})
             .then((sale: Sale | undefined) => {
 
                 if (!sale || sale === undefined) {
