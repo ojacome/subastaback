@@ -4,6 +4,7 @@ import { Product } from "../models/product.model";
 import { ImageProduct } from "../models/image_product.model";
 import path from "path";
 import fs from "fs";
+import { Sale } from "../models/sale.model";
 
 
 @EntityRepository(Product)
@@ -273,18 +274,17 @@ export class ProductController extends Repository<Product>  {
             }
 
             // /******** Validaciones **********/
-            // let regInci = await getRepository(Incidence).count({ productId : productId })
-            //     .then()
-            //     .catch((err: Error) => {
-            //         return res.status(500).json({
-            //             ok: false,
-            //             message: "Error al buscar CAC en incidencias ",
-            //             error: err.message
-            //         })
-            //     });
+            let regSale = await getRepository(Sale).count({ product : productDelete })
+                .then()
+                .catch((err: Error) => {
+                    return res.status(500).json({
+                        ok: false,
+                        message: "Error al buscar Producto en subastas ",
+                        error: err.message
+                    })
+                });
 
-            // if(!regInci){
-            if(true){
+            if(!regSale){            
                 await productRepo.softDelete({ id: productId })
                     .then((result: DeleteResult) => {
 
