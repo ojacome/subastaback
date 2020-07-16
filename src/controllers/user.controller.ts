@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { EntityRepository, Repository, getRepository, DeleteResult } from "typeorm";
 import { User } from "../models/user.model";
+import { validate } from "class-validator";
 
 
 @EntityRepository(User)
@@ -67,18 +68,18 @@ export class UserController extends Repository<User>  {
         
         
 
-        // //Validaciones
-        // const errorsCac = await validate(newCac);
+        //Validaciones
+        const errorsUser = await validate(newUser);
 
-        // if (errorsCac.length > 0) {
-        //     return res.status(400).json({
-        //         ok: false,
-        //         errors: {
-        //             validation: true,
-        //             error: errorsCac
-        //         }
-        //     })
-        // }
+        if (errorsUser.length > 0) {
+            return res.status(400).json({
+                ok: false,
+                errors: {
+                    validation: true,
+                    error: errorsUser
+                }
+            })
+        }
 
         await userRepo.save(newUser)
             .then(async (userCreated: User) => {

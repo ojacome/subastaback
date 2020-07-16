@@ -5,6 +5,7 @@ import { ImageProduct } from "../models/image_product.model";
 import path from "path";
 import fs from "fs";
 import { Sale } from "../models/sale.model";
+import { validate } from 'class-validator';
 
 
 @EntityRepository(Product)
@@ -58,28 +59,38 @@ export class ProductController extends Repository<Product>  {
 
         let { name, description } = req.body;
         
-        let productRepo = getRepository(Product);
-
         
+        
+        let imageRepos = getRepository(ImageProduct);
+        let imgFiles: any = req.files;
+        // console.log(imgFiles.length)
+        if (imgFiles.length === 0) {
+
+            return res.status(400).json({
+                ok: false,
+                message: 'Debe subir al menos una imagen'
+            });
+        }
+        
+        let productRepo = getRepository(Product);
         let newProduct = new Product();
 
         newProduct.name = name;
-        newProduct.description = description;
-        // newProduct.images = images;
+        newProduct.description = description;        
         
 
-        // //Validaciones
-        // const errorsCac = await validate(newCac);
+        //Validaciones
+        const errorsProduct = await validate(newProduct);
 
-        // if (errorsCac.length > 0) {
-        //     return res.status(400).json({
-        //         ok: false,
-        //         errors: {
-        //             validation: true,
-        //             error: errorsCac
-        //         }
-        //     })
-        // }
+        if (errorsProduct.length > 0) {
+            return res.status(400).json({
+                ok: false,
+                errors: {
+                    validation: true,
+                    error: errorsProduct
+                }
+            })
+        }
 
         await productRepo.save(newProduct)
             .then(async (productCreated: Product) => {
@@ -91,22 +102,18 @@ export class ProductController extends Repository<Product>  {
                         });
                 }
 
-
-                //asociar las imagenes al producto
-                let imageRepos = getRepository(ImageProduct);
-                let imgFiles: any = req.files;
+                                
                 
-                if (imgFiles.length) {
+                //asociar las imagenes al producto
+                imgFiles.forEach(async (file: Express.Multer.File) => {
+                    // console.log(file)
+                    let img = new ImageProduct();
+                    img.filename = file.filename;
+                    img.product = productCreated;
+                    await imageRepos.save(img);
+                })
        
-                    imgFiles.forEach(async (file: Express.Multer.File) => {
-                        // console.log(file)
-                        let img = new ImageProduct();
-                        img.filename = file.filename;
-                        img.product = productCreated;
-                        await imageRepos.save(img);
-                    })
-       
-                }
+                
 
 
 
@@ -194,18 +201,18 @@ export class ProductController extends Repository<Product>  {
                 product.description = description;
 
 
-                //Validaciones
-                // const errorsCac = await validate(product);
+                // Validaciones
+                const errorsSale = await validate(product);
         
-                // if (errorsCac.length > 0) {
-                //     return res.status(400).json({
-                //         ok: false,
-                //         errors: {
-                //             validation: true,
-                //             error: errorsCac
-                //         }
-                //     })
-                // }
+                if (errorsSale.length > 0) {
+                    return res.status(400).json({
+                        ok: false,
+                        errors: {
+                            validation: true,
+                            error: errorsSale
+                        }
+                    })
+                }
 
                 await productRepo.save(product)
                     .then((productUpdate: Product) => {
