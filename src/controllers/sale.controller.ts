@@ -3,6 +3,7 @@ import { EntityRepository, Repository, getRepository, DeleteResult } from "typeo
 import { Sale, Status } from "../models/sale.model";
 import { User } from "../models/user.model";
 import { Product } from "../models/product.model";
+import { validate } from "class-validator";
 
 
 @EntityRepository(Sale)
@@ -88,23 +89,23 @@ export class SaleController extends Repository<Sale>  {
         let newSale = new Sale();
 
         newSale.status = Status.EnProceso;
-        newSale.total = total;
+        newSale.total = parseFloat(total);
         newSale.product = product;
         newSale.user = user;
         
 
-        // //Validaciones
-        // const errorsCac = await validate(newCac);
+        //Validaciones
+        const errorsSale = await validate(newSale);
 
-        // if (errorsCac.length > 0) {
-        //     return res.status(400).json({
-        //         ok: false,
-        //         errors: {
-        //             validation: true,
-        //             error: errorsCac
-        //         }
-        //     })
-        // }
+        if (errorsSale.length > 0) {
+            return res.status(400).json({
+                ok: false,
+                errors: {
+                    validation: true,
+                    error: errorsSale
+                }
+            })
+        }
 
         await saleRepo.save(newSale)
             .then(async (saleCreated: Sale) => {
@@ -225,17 +226,17 @@ export class SaleController extends Repository<Sale>  {
 
 
                 //Validaciones
-                // const errorsCac = await validate(sale);
+                const errorsSale = await validate(sale);
         
-                // if (errorsCac.length > 0) {
-                //     return res.status(400).json({
-                //         ok: false,
-                //         errors: {
-                //             validation: true,
-                //             error: errorsCac
-                //         }
-                //     })
-                // }
+                if (errorsSale.length > 0) {
+                    return res.status(400).json({
+                        ok: false,
+                        errors: {
+                            validation: true,
+                            error: errorsSale
+                        }
+                    })
+                }
 
                 await saleRepo.save(sale)
                     .then((saleUpdate: Sale) => {

@@ -179,17 +179,17 @@ export class UserController extends Repository<User>  {
 
 
                 //Validaciones
-                // const errorsCac = await validate(user);
+                const errorsUser = await validate(user);
         
-                // if (errorsCac.length > 0) {
-                //     return res.status(400).json({
-                //         ok: false,
-                //         errors: {
-                //             validation: true,
-                //             error: errorsCac
-                //         }
-                //     })
-                // }
+                if (errorsUser.length > 0) {
+                    return res.status(400).json({
+                        ok: false,
+                        errors: {
+                            validation: true,
+                            error: errorsUser
+                        }
+                    })
+                }
 
                 await userRepo.save(user)
                     .then((userUpdate: User) => {

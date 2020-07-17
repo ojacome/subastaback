@@ -34,7 +34,7 @@ export class User {
     }
     return true;
   })
-  @IsNumberString({no_symbols: true},{message: 'Debe escribir un telefono válido'})
+  @IsNumberString({no_symbols: true},{message: 'Debe escribir un teléfono válido'})
   phone: string;
 
   @Column({ default: false})

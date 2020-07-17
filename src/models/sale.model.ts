@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, Double, ManyToOne, OneToOne, JoinColumn } from "typeorm";
 import { User } from "./user.model";
 import { Product } from "./product.model";
+import { IsNumber, IsNotEmpty, min, Min } from "class-validator";
 
 export enum Status {        
     EnProceso = 'e',
@@ -24,7 +25,10 @@ export class Sale {
   status: Status;
 
   @Column({type: 'double'})
-  total: Double
+  @IsNotEmpty({ message: 'El número no debe estar vacío' })
+  @IsNumber({maxDecimalPlaces: 2},{message: 'El número ingresado es inválido'})
+  @Min(1,{message: 'La mínima cantidad es de 1.'})
+  total: number
 
 
 
