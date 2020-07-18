@@ -46,7 +46,7 @@ export class UserController extends Repository<User>  {
     }
 
 	/**
-     * Crear Usuario
+     * Crear Usuario y envio de token
      *
      * @param {Request} req
      * @param {Response} res
@@ -117,6 +117,68 @@ export class UserController extends Repository<User>  {
 
             });
     }
+
+   /**
+    * Inicio de Sesion, envio token
+    *
+    * @param {Request} req
+    * @param {Response} res
+    * @memberof UserController
+    */
+   public async  loginPost  (req: Request, res: Response) {
+       
+		let email: string = req.body.email;
+		let pass: string = req.body.password;
+		
+
+		let userRepository = getRepository(User);
+
+		await userRepository.findOne({where: { email: email } })
+
+			.then((usuario: User | undefined) => {
+
+				if (!usuario || usuario === undefined) {
+
+					return res.status(400)
+						.json({
+							ok: false,
+							message: 'El correo electrónico no se encuentra registrado.'
+						});
+
+				}
+
+				if (!bcrypt.compareSync(pass, usuario.password)) {
+
+					return res.status(400)
+						.json({
+							ok: false,
+							message: 'Credenciales incorrectas'
+						});
+
+				}
+
+				usuario.password = ":("; //enmascarar el password
+
+				//Crear toquen...   {userToken: usuario} info agregada al payload, sera utilizada en el decoded en la verificacion del token
+				let token = jwt.sign({ userToken: usuario }, 'secretkey', { expiresIn: 14400 }); //14400 expira en 4h 
+
+				res.status(200).json({
+					ok: true,
+					user_login: usuario,
+					token
+				})
+
+			}).catch((err: Error) => {
+
+				return res.status(500).json({
+					ok: false,
+					mensaje: 'Error al iniciar sesión',
+					error: err.message
+				});
+
+			})
+
+	}
 
 	/**
      * Consultar por ID

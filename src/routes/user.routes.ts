@@ -10,6 +10,7 @@ const router = Router();
     router.get('/:id', users.showUser);
     
     router.post('/',  users.createUser);
+    router.post('/login',  users.loginPost);
 
     router.put('/:id', users.updateUser);
 
