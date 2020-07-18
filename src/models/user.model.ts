@@ -44,13 +44,13 @@ export class User {
 
 
 
-  @CreateDateColumn({ type: "datetime"})
+  @CreateDateColumn({ type: "datetime", select: false})
   createdAt: Date;
 
-  @UpdateDateColumn({ type: "datetime"})
+  @UpdateDateColumn({ type: "datetime", select: false})
   updatedAt: Date;
 
-  @DeleteDateColumn({ type: "datetime"}) 
+  @DeleteDateColumn({ type: "datetime", select: false}) 
   deletedAt: Date;
 
 

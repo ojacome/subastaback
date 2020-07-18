@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import { EntityRepository, Repository, getRepository, DeleteResult } from "typeorm";
 import { User } from "../models/user.model";
 import { validate } from "class-validator";
-
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 @EntityRepository(User)
 export class UserController extends Repository<User>  {
@@ -81,6 +82,10 @@ export class UserController extends Repository<User>  {
             })
         }
 
+        //encriptar constraseña
+        newUser.password = bcrypt.hashSync(password, 10);
+        
+
         await userRepo.save(newUser)
             .then(async (userCreated: User) => {
 
@@ -91,9 +96,15 @@ export class UserController extends Repository<User>  {
                         });
                 }
 
+                userCreated.password = ":("; //enmascarar el password
+
+                //Crear toquen...   {userToken: usuario} info agregada al payload, sera utilizada en el decoded en la verificacion del token
+				let token = jwt.sign({ userToken: userCreated }, "secretkey", { expiresIn: 14400 }); //14400 expira en 4h 
+
                 res.status(201).json({
                         ok: true,
-                        user: userCreated
+                        user: userCreated,
+                        token
                     });
 
             }).catch((err: Error) => {
