@@ -345,5 +345,129 @@ export class ProductController extends Repository<Product>  {
 			res.sendFile(imgDefault);
 		}
 
-	}
+    }
+
+    /**
+     * Subir imágenes a producto creado
+     * recibe por parametro el productId
+     * 
+     * @param {Request} req
+     * @param {Response} res
+     * @returns
+     * @memberof ProductController
+     */
+    public async uploadImg(req: Request, res: Response) {
+
+        
+        let imgFiles: any = req.files;
+        // console.log(imgFiles.length)
+        if (imgFiles.length === 0) {
+
+            return res.status(400).json({
+                ok: false,
+                message: 'Debe subir al menos una imagen'
+            });
+        }
+
+        let imageRepos = getRepository(ImageProduct);
+		let productId: Number = Number(req.params.productId);
+
+        let productRepo = getRepository(Product);
+        await productRepo.findOne({where:{id: productId}})
+        .then((product: Product | undefined) =>{
+
+            if (!product || product === undefined) {
+    
+                return res.status(404).json({
+                    ok: false,
+                    message: `No se encontró un Producto para el id: ${productId}`,
+                });
+            }
+
+            //asociar las imagenes al producto
+            imgFiles.forEach(async (file: Express.Multer.File) => {
+                // console.log(file)
+                let img = new ImageProduct();
+                img.filename = file.filename;
+                img.product = product;
+                await imageRepos.save(img);
+            })
+
+            res.status(200).json({
+                ok: true,
+                message: 'Las imágenes fueron subidas con éxito.'
+            });
+
+
+            
+        }).catch((err: Error) =>{
+
+            return res.status(500).json({
+                ok: false,
+                message: 'Error al buscar producto',
+                error: err.message
+            })
+        })
+		
+
+    }
+    
+    public async deleteImg(req: Request, res: Response) {
+
+		let img = req.params.img;
+		
+        
+        if (img) {
+            let oldPath = path.resolve(__dirname, `../uploads/products/${img}`);
+            
+            //verificar si existe la imagen en el path		
+            if (fs.existsSync(oldPath)) {
+                fs.unlinkSync(oldPath);
+
+                //verificar si existe en base
+                let imageRepos = getRepository(ImageProduct);
+                await imageRepos.findOne({filename: img})
+                .then(async (imagen: ImageProduct | undefined)=>{
+
+                    if(!imagen || imagen ===undefined){
+                        return res.status(400).json({
+                            ok: false,
+                            message: 'La imagen no existe en base'
+                        });
+                    }
+
+                    //eliminar de base
+                    await imageRepos.delete({filename:img})
+                    .then((result)=>{
+
+                        res.status(200).json({
+                            ok: false,
+                            message: 'Imagen eliminada'
+                        });
+                    }).catch((err: Error)=>{
+                        return res.status(500).json({
+                            ok: false,
+                            message: 'Error al eliminar imagen de la base',
+                            error: err.message
+                        })
+                    })
+                    
+                })
+                .catch((err: Error)=> {
+                    return res.status(500).json({
+                        ok: false,
+                        message: 'Error al buscar imagen a eliminar',
+                        error: err.message
+                    })
+                })
+            }
+            else{
+                return res.status(400).json({
+                    ok: false,
+                    message: 'La imagen no existe'
+                });
+            }
+        }
+
+    }
 }

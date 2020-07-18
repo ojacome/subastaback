@@ -50,5 +50,8 @@ const router = Router();
 
     router.delete('/:id', products.deleteProduct);    
        
-    router.get('/download/images/:img', products.downloadImg);
+    router.get('/download/images/:img', products.downloadImg);    
+    router.post('/upload/images/:productId', [uploadImages.array('images', 5)] ,products.uploadImg);
+    router.delete('/remove/images/:img', products.deleteImg);
+
 export default router;
