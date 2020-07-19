@@ -190,19 +190,18 @@ export class UserController extends Repository<User>  {
      * @param {Response} res
      * @memberof UserController
      */
-    public async showUser(req: Request, res: Response) {
+    public async showUser(req: Request, res: Response) {        
 
-        const userId: number = Number(req.params.id);
-
+        let usuario: any = req.userToken;
         let userRepo = getRepository(User);
 
-        await userRepo.findOne({id: userId},{relations: ["sales"]})
+        await userRepo.findOne({id: usuario.id},{relations: ["sales"]})
             .then((user: User | undefined) => {
 
                 if (!user || user === undefined) {
                     return res.status(404).json({
                             ok: false,
-                            error: `No se encontró un usuario para el id ${userId}`
+                            error: `No se encontró un usuario para el id ${usuario.id}`
                         });
                 }
 
@@ -231,19 +230,19 @@ export class UserController extends Repository<User>  {
      * @memberof UserController
      */
     public async updateUser(req: Request, res: Response) {
-
-        let userId: number = Number(req.params.id);
+        
+        let usuario: any = req.userToken;
         let { email, password, fullName, address, phone } = req.body;
 
         let userRepo = getRepository(User);
 
-        await userRepo.findOne({id: userId})
+        await userRepo.findOne({id: usuario.id})
             .then(async (user: User | undefined) => {
 
                 if (!user) {
                     return res.status(404).json({
                             ok: false,
-                            message: `No se encontró usuario con el id: ${userId}`
+                            message: `No se encontró usuario con el id: ${usuario.id}`
                         });
                 }
 
@@ -318,23 +317,23 @@ export class UserController extends Repository<User>  {
      */
     public async deleteUser(req: Request, res: Response) {
 
-        const userId: number = Number(req.params.id);
-
+        const userIdparam: number = Number(req.params.id);
+        let usuario: any = req.userToken;
         let userRepo = getRepository(User);
 
         
-        await userRepo.findOne({id: userId})
+        await userRepo.findOne({id: usuario.id})
         .then(async (userDelete: User | undefined) => {
                         
             if (!userDelete || userDelete === undefined) {
                 return res.status(404).json({
                     ok: false,
-                    message: `No se encontró usuario con el id: ${userId}`
+                    message: `No se encontró usuario con el id: ${usuario.id}`
                 });
             }
 
             // /******** Validaciones **********/
-            // let regInci = await getRepository(Incidence).count({ userId : userId })
+            // let regInci = await getRepository(Incidence).count({ usuario.id : usuario.id })
             //     .then()
             //     .catch((err: Error) => {
             //         return res.status(500).json({
@@ -346,7 +345,7 @@ export class UserController extends Repository<User>  {
 
             // if(!regInci){
             if(true){
-                await userRepo.softDelete({ id: userId })
+                await userRepo.softDelete({ id: usuario.id })
                     .then((result: DeleteResult) => {
 
                         res.status(200).json({

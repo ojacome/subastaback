@@ -55,19 +55,17 @@ export class SaleController extends Repository<Sale>  {
      */
     public async createSale(req: Request, res: Response) {
 
-        let { productId, userId, total} = req.body;
-        
-
-
-        //obtener userId del token        
+        let { productId, total} = req.body;
+                
+        let usuario: any = req.userToken;     
 
         let userRepo = getRepository(User);
-		let user: User | undefined = await userRepo.findOne({ id: userId });
+		let user: User | undefined = await userRepo.findOne({ id: usuario.id });
 		if (!user || user === undefined) {
 
 			return res.status(404).json({
 				ok: false,
-				message: `No se encontró un Usuario para el id: ${userId}`,
+				message: `No se encontró un Usuario para el id: ${usuario.id}`,
 			});
         }
         
@@ -183,17 +181,17 @@ export class SaleController extends Repository<Sale>  {
     public async updateSale(req: Request, res: Response) {
 
         let saleId: number = Number(req.params.id);
-        let { userId, productId, total } = req.body;
+        let { productId, total } = req.body;
 
-        //obtener userId del token        
+        let usuario: any = req.userToken;          
 
         let userRepo = getRepository(User);
-		let user: any = await userRepo.findOne({ id: userId });
+		let user: any = await userRepo.findOne({ id: usuario.id });
 		if (!user || user === undefined) {
 
 			return res.status(404).json({
 				ok: false,
-				message: `No se encontró un Usuario para el id: ${userId}`,
+				message: `No se encontró un Usuario para el id: ${usuario.id}`,
 			});
         }
         
@@ -209,7 +207,8 @@ export class SaleController extends Repository<Sale>  {
         
         let saleRepo = getRepository(Sale);
 
-        await saleRepo.findOne({id: saleId})
+        //se hace triple validacion para que sea el usuario, subasta y mismo producto a actualizar
+        await saleRepo.findOne({id: saleId ,product: product, user: user})
             .then(async (sale: Sale | undefined) => {
 
                 if (!sale) {
@@ -219,7 +218,7 @@ export class SaleController extends Repository<Sale>  {
                         });
                 }
 
-                sale.total = total;
+                sale.total = parseFloat(total);
                 sale.status = Status.Finalizado;
                 sale.product = product;
                 sale.user = user;

@@ -10,11 +10,11 @@ const router = Router();
     // rutas admin
     router.get('/', [verificaToken, verificaSuperAdmin], users.indexUser)    
     // router.delete('/:id', users.deleteUser);
-        
+
 
     //rutas auth
-    router.get('/:id', verificaToken,  users.showUser);
-    router.put('/:id', verificaToken,  users.updateUser);
+    router.get('/user', verificaToken,  users.showUser);
+    router.put('/user', verificaToken,  users.updateUser);
     
 
     // rutas publicas
