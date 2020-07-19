@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany } from "typeorm";
 import { Sale } from "./sale.model";
 import { IsDefined, IsNotEmpty, IsEmail, IsInt, IsNumberString, ValidateIf } from "class-validator";
+import { UniqueEmail } from "../custom_validations/UniqueEmail";
 
 
 @Entity()
@@ -11,9 +12,10 @@ export class User {
 
 
 
-  @Column()
+  @Column({unique: true})
   @IsNotEmpty({ message: 'El email no debe estar vacío' })
   @IsEmail(undefined,{message:'Debe escribir un correo válido'})
+  @UniqueEmail({message: "El correo ya está registrado."})
   email: string;
   
   @Column({select: false})
