@@ -16,7 +16,7 @@ export class User {
   @IsEmail(undefined,{message:'Debe escribir un correo válido'})
   email: string;
   
-  @Column()
+  @Column({select: false})
   @IsNotEmpty({ message: 'La contraseña no debe estar vacío' })
   password: string;
   

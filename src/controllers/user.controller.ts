@@ -134,8 +134,10 @@ export class UserController extends Repository<User>  {
 
 		let userRepository = getRepository(User);
 
-		await userRepository.findOne({where: { email: email } })
-
+		await userRepository.findOne({ 
+            select: ["id", "email", "password", "fullName", "phone", "isAdmin", "address"], 
+            where: { email: email } 
+            })
 			.then((usuario: User | undefined) => {
 
 				if (!usuario || usuario === undefined) {
