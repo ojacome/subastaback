@@ -66,6 +66,7 @@ export class UserController extends Repository<User>  {
         newUser.fullName = fullName;
         newUser.phone = phone;
         newUser.address = address;
+        // newUser.isAdmin = true;
         
         
 

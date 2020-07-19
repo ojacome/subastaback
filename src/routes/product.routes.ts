@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { ProductController } from '../controllers/product.controller';
 import multer from 'multer'
 import path from 'path';
+import { verificaToken, verificaSuperAdmin } from '../middlewares/autenticacion';
 
 
 const storage = multer.diskStorage({
@@ -41,17 +42,16 @@ const router = Router();
 
     const products = new ProductController();
     
+    //rutas publicas
     router.get('/', products.indexProduc)    
     router.get('/:id', products.showProduct);
-    
-    router.post('/', [uploadImages.array('images', 5)] ,products.createProduct);
-
-    router.put('/:id', products.updateProduct);
-
-    router.delete('/:id', products.deleteProduct);    
-       
     router.get('/download/images/:img', products.downloadImg);    
-    router.post('/upload/images/:productId', [uploadImages.array('images', 5)] ,products.uploadImg);
-    router.delete('/remove/images/:img', products.deleteImg);
+    
+    //rutas admin
+    router.post('/', [verificaToken, verificaSuperAdmin], [uploadImages.array('images', 5)] ,products.createProduct);
+    router.post('/upload/images/:productId',[verificaToken, verificaSuperAdmin], [uploadImages.array('images', 5)] ,products.uploadImg);
+    router.put('/:id',[verificaToken, verificaSuperAdmin], products.updateProduct);
+    router.delete('/:id', [verificaToken, verificaSuperAdmin], products.deleteProduct);           
+    router.delete('/remove/images/:img', [verificaToken, verificaSuperAdmin], products.deleteImg);
 
 export default router;

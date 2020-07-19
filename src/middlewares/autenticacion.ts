@@ -49,3 +49,23 @@ export const verificaToken = (req: Request, res: Response, next: NextFunction) =
   });
 
 }
+
+
+//  middleware para verificar SuperAdmin
+export const verificaSuperAdmin = (req: Request, res: Response, next: NextFunction) => {
+
+    let usuario: any = req.userToken; //usuario agregado al request en el middleware verificaToken
+ 
+    if (usuario.isAdmin === true){
+      next();
+    }else {
+ 
+     return res.status(403).json({
+       ok: false,
+       message: 'Token incorrecto',
+       errors: { message: 'No autorizado'}
+     });
+ 
+    }
+ 
+ }
