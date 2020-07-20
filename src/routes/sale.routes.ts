@@ -8,10 +8,13 @@ const router = Router();
     const sales = new SaleController();
     
     //rutas con auth
-    router.get('/', verificaToken, sales.indexSale)    
-    router.get('/:id', verificaToken, sales.showSale);    
+    router.get('/', sales.indexSale)    
+    router.get('/:id', sales.showSale); 
+    
+    
     // router.post('/', verificaToken,  sales.createSale);
     router.put('/:id', verificaToken, sales.updateSale);
+    router.put('/paypal/:id', verificaToken, sales.updatePaySale);
     // router.delete('/:id', sales.deleteSale);    
        
     

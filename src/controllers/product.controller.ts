@@ -344,6 +344,7 @@ export class ProductController extends Repository<Product>  {
 
 	/**
      * Eliminar por ID siempre que No tenga ofertante en subasta
+     * Tambien se elimina la subasta ya que no tiene ofertante
      *
      * @param {Request} req
      * @param {Response} res
@@ -367,7 +368,8 @@ export class ProductController extends Repository<Product>  {
                 }
 
                 // /******** Validaciones **********/
-                let regSale: any = await getRepository(Sale).findOne({ product: productDelete }, {relations: ["user"]} )
+                let saleRepo = getRepository(Sale);
+                let sale: any = await saleRepo.findOne({ product: productDelete }, {relations: ["user"]} )
                     .then()
                     .catch((err: Error) => {
                         return res.status(500).json({
@@ -376,16 +378,31 @@ export class ProductController extends Repository<Product>  {
                             error: err.message
                         })
                     });
-                console.group(regSale)
-                if (!regSale.user) {
+            
+                if (!sale.user) {
                     await productRepo.softDelete({ id: productId })
-                        .then((result: DeleteResult) => {
+                        .then(async (result: DeleteResult) => {
 
-                            res.status(200).json({
-                                ok: true,
-                                message: 'Producto eliminado',
-                                product: productDelete
-                            });
+                            await saleRepo.softDelete({id: sale.id})
+                            .then((result: DeleteResult)=> {
+
+                                res.status(200).json({
+                                    ok: true,
+                                    message: 'Producto eliminado',
+                                    product: productDelete,
+                                    sale: result
+                                });
+
+                            })
+                            .catch((err: Error) => {
+                                return res.status(500).json({
+                                    ok: false,
+                                    message: 'Error al subasta',
+                                    error: err.message
+                                })
+                            })
+
+                            
 
                         }).catch((err: Error) => {
                             return res.status(500).json({
@@ -497,7 +514,16 @@ export class ProductController extends Repository<Product>  {
 
 
     }
-
+    
+    /**
+     * Eliminar imagen po fileName (id unico para cada imaeng)
+     * se eliminar archivo y registro de base de datos
+     *
+     * @param {Request} req
+     * @param {Response} res
+     * @returns
+     * @memberof ProductController
+     */
     public async deleteImg(req: Request, res: Response) {
 
         let img = req.params.img;
