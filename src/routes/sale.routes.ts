@@ -10,7 +10,7 @@ const router = Router();
     //rutas con auth
     router.get('/', verificaToken, sales.indexSale)    
     router.get('/:id', verificaToken, sales.showSale);    
-    router.post('/', verificaToken,  sales.createSale);
+    // router.post('/', verificaToken,  sales.createSale);
     router.put('/:id', verificaToken, sales.updateSale);
     // router.delete('/:id', sales.deleteSale);    
        

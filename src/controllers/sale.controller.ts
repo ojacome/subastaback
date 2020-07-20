@@ -47,7 +47,7 @@ export class SaleController extends Repository<Sale>  {
     }
 
 	/**
-     * Crear Subasta
+     * Crear Subasta METODO ELIMINADO
      *
      * @param {Request} req
      * @param {Response} res
@@ -208,7 +208,7 @@ export class SaleController extends Repository<Sale>  {
         let saleRepo = getRepository(Sale);
 
         //se hace triple validacion para que sea el usuario, subasta y mismo producto a actualizar
-        await saleRepo.findOne({id: saleId ,product: product, user: user})
+        await saleRepo.findOne({id: saleId ,product: product})
             .then(async (sale: Sale | undefined) => {
 
                 if (!sale) {
@@ -220,7 +220,7 @@ export class SaleController extends Repository<Sale>  {
 
                 sale.total = parseFloat(total);
                 sale.status = Status.Finalizado;
-                sale.product = product;
+                sale.product = sale.product;
                 sale.user = user;
 
 
