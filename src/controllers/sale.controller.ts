@@ -86,7 +86,7 @@ export class SaleController extends Repository<Sale>  {
         
         let newSale = new Sale();
 
-        newSale.status = Status.EnProceso;
+        newSale.status = Status.Disponible;
         newSale.total = parseFloat(total);
         newSale.product = product;
         newSale.user = user;

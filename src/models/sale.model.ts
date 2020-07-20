@@ -4,7 +4,7 @@ import { Product } from "./product.model";
 import { IsNumber, IsNotEmpty, min, Min } from "class-validator";
 
 export enum Status {        
-    EnProceso = 'e',
+    Disponible = 'd',
     Finalizado = 'f',
     Pagado = 'p'
   }
@@ -20,7 +20,7 @@ export class Sale {
   @Column({    
     type:'enum',
     enum: Status,
-    default: Status.EnProceso
+    default: Status.Disponible
   })
   status: Status;
 
