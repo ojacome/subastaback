@@ -68,7 +68,7 @@ export class SaleController extends Repository<Sale>  {
                 if (!sale || sale === undefined) {
                     return res.status(404).json({
                         ok: false,
-                        error: `No se encontró una subasta para el id ${saleId}`
+                        message: `No se encontró una subasta para el id ${saleId}`
                     });
                 }
 

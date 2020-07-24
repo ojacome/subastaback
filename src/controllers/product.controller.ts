@@ -189,7 +189,7 @@ export class ProductController extends Repository<Product>  {
                 if (!product || product === undefined) {
                     return res.status(404).json({
                         ok: false,
-                        error: `No se encontró un producto para el id ${productId}`
+                        message: `No se encontró un producto para el id ${productId}`
                     });
                 }
 

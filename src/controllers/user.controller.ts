@@ -104,7 +104,7 @@ export class UserController extends Repository<User>  {
 
                 res.status(201).json({
                         ok: true,
-                        user: userCreated,
+                        // user: userCreated,
                         token
                     });
 
@@ -167,7 +167,7 @@ export class UserController extends Repository<User>  {
 
 				res.status(200).json({
 					ok: true,
-					user_login: usuario,
+					// user_login: usuario,
 					token
 				})
 
@@ -201,7 +201,7 @@ export class UserController extends Repository<User>  {
                 if (!user || user === undefined) {
                     return res.status(404).json({
                             ok: false,
-                            error: `No se encontró un usuario para el id ${usuario.id}`
+                            message: `No se encontró un usuario para el id ${usuario.id}`
                         });
                 }
 

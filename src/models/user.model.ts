@@ -23,7 +23,7 @@ export class User {
   password: string;
   
   @Column()
-  @IsNotEmpty({ message: 'El nombre no debe estar vacío' })
+  @IsNotEmpty({ message: 'El nombre y apellido no debe estar vacío' })
   fullName: string;
 
   @Column({nullable: true})
