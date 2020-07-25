@@ -140,12 +140,14 @@ export class UserController extends Repository<User>  {
             })
 			.then((usuario: User | undefined) => {
 
+
+                //si entra es porque no está registrado 
 				if (!usuario || usuario === undefined) {
 
 					return res.status(400)
 						.json({
 							ok: false,
-							message: 'El correo electrónico no se encuentra registrado.'
+							message: 'Credenciales incorrectas.'
 						});
 
 				}
