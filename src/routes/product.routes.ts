@@ -43,11 +43,11 @@ const router = Router();
     const products = new ProductController();
     
     //rutas publicas
-    router.get('/', products.indexProduc)    
-    router.get('/:id', products.showProduct);
     router.get('/download/images/:img', products.downloadImg);    
     
     //rutas admin
+    router.get('/', [verificaToken, verificaSuperAdmin], products.indexProduc)    
+    router.get('/:id', [verificaToken, verificaSuperAdmin], products.showProduct);
     router.post('/', [verificaToken, verificaSuperAdmin], [uploadImages.array('images', 5)] ,products.createProduct);
     router.post('/upload/images/:productId',[verificaToken, verificaSuperAdmin], [uploadImages.array('images', 5)] ,products.uploadImg);
     router.put('/:id',[verificaToken, verificaSuperAdmin], products.updateProduct);

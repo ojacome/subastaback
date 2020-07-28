@@ -243,7 +243,7 @@ export class ProductController extends Repository<Product>  {
 
                     return res.status(400).json({
                         ok: false,
-                        message: `El producto se encuentra en subasta`,
+                        message: `El producto tiene una oferta. No puede cambiar información.`,
                     });
                 }
 

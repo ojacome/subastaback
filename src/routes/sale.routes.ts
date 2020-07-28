@@ -7,16 +7,20 @@ const router = Router();
 
     const sales = new SaleController();
     
-    //rutas con auth
+    //rutas publicas
     router.get('/', sales.indexSale)    
     router.get('/:id', sales.showSale); 
     
     
-    // router.post('/', verificaToken,  sales.createSale);
+    //rutas con auht    
     router.put('/:id', verificaToken, sales.updateSale);
     router.put('/paypal/:id', verificaToken, sales.updatePaySale);
+
+
+    //rutas admin
+    router.get('/admin/:status/:user', [verificaToken, verificaSuperAdmin], sales.indexSalexStatus)   
     router.put('/finished/:id', [verificaToken, verificaSuperAdmin], sales.updateFinalizadoSale);
-    // router.delete('/:id', sales.deleteSale);    
+    
        
     
 export default router;

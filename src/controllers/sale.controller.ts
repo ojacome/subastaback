@@ -49,6 +49,50 @@ export class SaleController extends Repository<Sale>  {
             });
     }	
 
+    /**
+     * Consultar las subastas para administrador
+     * debe indicar el status
+     * si trae con ofertas (s) o sin ofertas(n)
+     *
+     * @param {Request} req
+     * @param {Response} res
+     * @memberof SaleController
+     */
+    public async indexSalexStatus(req: Request, res: Response) {
+        
+        const status: any = req.params.status;
+        const withUser: any = req.params.user;
+
+        await getRepository(Sale).find({
+            where: { status: status },
+            relations: ["user", "product"]
+            })
+            .then((sales: Sale[]) => {
+
+                if (sales.length === 0) {
+                    return res.status(404).json({
+                        ok: false,
+                        message: 'No se encontraron registros'
+                    })
+                }                  
+                
+                if(withUser==='s'){ sales = sales.filter( sales => sales.user) }
+                else { sales = sales.filter( sales => !sales.user) }
+                                    
+                res.status(200).json({
+                    ok: true,
+                    sales
+                })                
+            })
+            .catch((err: Error) => {
+                return res.status(500).json({
+                    ok: false,
+                    message: "Error al obtener todas las subastas",
+                    error: err.message
+                })
+            });
+    }
+
 	/**
      * Consultar subasta status disponible por ID
      *
