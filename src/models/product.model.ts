@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany, ManyToOne } from "typeorm";
 import { ImageProduct } from "./image_product.model";
 import { IsEmail, IsEnum, IsDefined, IsNotEmpty, ValidateIf, IsNumber, Min } from "class-validator";
+import { Category } from "./category.model";
 
 
 
@@ -47,4 +48,7 @@ export class Product {
 
   @OneToMany(type => ImageProduct, image => image.product)
   images: ImageProduct[];
+
+  @ManyToOne(type => Category, category => category.products)
+  category: Category
 }
