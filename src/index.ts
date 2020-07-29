@@ -4,8 +4,9 @@ import app from './app'
 import router from './routes/routes';
 import { Request, Response, NextFunction} from 'express'
 import multer from 'multer'
+import { SERVER_PORT } from './global/environment';
 
-let port = 3900;
+let port = SERVER_PORT;
 
 
 

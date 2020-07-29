@@ -4,6 +4,7 @@ import { User } from "../models/user.model";
 import { validate } from "class-validator";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { SEED } from "../global/environment";
 
 @EntityRepository(User)
 export class UserController extends Repository<User>  {
@@ -100,7 +101,7 @@ export class UserController extends Repository<User>  {
                 userCreated.password = ":("; //enmascarar el password
 
                 //Crear toquen...   {userToken: usuario} info agregada al payload, sera utilizada en el decoded en la verificacion del token
-				let token = jwt.sign({ userToken: userCreated }, "secretkey", { expiresIn: 14400 }); //14400 expira en 4h 
+				let token = jwt.sign({ userToken: userCreated }, SEED, { expiresIn: 14400 }); //14400 expira en 4h 
 
                 res.status(201).json({
                         ok: true,
@@ -165,7 +166,7 @@ export class UserController extends Repository<User>  {
 				usuario.password = ":("; //enmascarar el password
 
 				//Crear toquen...   {userToken: usuario} info agregada al payload, sera utilizada en el decoded en la verificacion del token
-				let token = jwt.sign({ userToken: usuario }, 'secretkey', { expiresIn: 14400 }); //14400 expira en 4h 
+				let token = jwt.sign({ userToken: usuario }, SEED, { expiresIn: 14400 }); //14400 expira en 4h 
 
 				res.status(200).json({
 					ok: true,
