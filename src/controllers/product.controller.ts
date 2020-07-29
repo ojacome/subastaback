@@ -6,6 +6,7 @@ import path from "path";
 import fs from "fs";
 import { Sale, Status } from "../models/sale.model";
 import { validate } from 'class-validator';
+import { Category } from "../models/category.model";
 
 
 @EntityRepository(Product)
@@ -57,7 +58,7 @@ export class ProductController extends Repository<Product>  {
      */
     public async createProduct(req: Request, res: Response) {
 
-        let { name, description, price } = req.body;
+        let { name, description, price, categoryId } = req.body;
 
 
 
@@ -72,15 +73,26 @@ export class ProductController extends Repository<Product>  {
             });
         }
 
+        let categoryRepo = getRepository(Category);
+        let category: any = await categoryRepo.findOne({ id: categoryId });
+        if (!category || category === undefined) {
+
+            return res.status(404).json({
+                ok: false,
+                message: `No se encontró un categoría para el id: ${categoryId}`,
+            });
+        }
+
         let productRepo = getRepository(Product);
         let newProduct = new Product();
 
         newProduct.name = name;
         newProduct.description = description;
-        newProduct.price = parseFloat(price)
+        newProduct.price = parseFloat(price);
+        newProduct.category = category
 
 
-        //Validaciones
+        //Validaciones de clase
         const errorsProduct = await validate(newProduct);
 
         if (errorsProduct.length > 0) {
@@ -220,7 +232,18 @@ export class ProductController extends Repository<Product>  {
     public async updateProduct(req: Request, res: Response) {
 
         let productId: number = Number(req.params.id);
-        let { name, description, price } = req.body;
+        let { name, description, price, categoryId } = req.body;
+
+
+        //validar que exista categoria
+        let category: any = await getRepository(Category).findOne({ id: categoryId });
+        if (!category || category === undefined) {
+
+            return res.status(404).json({
+                ok: false,
+                message: `No se encontró un categoría para el id: ${categoryId}`,
+            });
+        }
 
 
         let productRepo = getRepository(Product);
@@ -250,6 +273,7 @@ export class ProductController extends Repository<Product>  {
                 product.name = name;
                 product.description = description;
                 product.price = parseFloat(price)
+                product.category = category
 
                 // Validaciones
                 const errorsSale = await validate(product);
