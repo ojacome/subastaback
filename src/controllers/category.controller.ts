@@ -22,15 +22,19 @@ export class CategoryController extends Repository<Category>  {
      */
     public async indexCategory(req: Request, res: Response) {
 
-        await getRepository(Category).find({ relations: ["products"] })
-            .then((categories: Category[]) => {
+        let categoryRepo = getRepository(Category)
+
+        await categoryRepo.find()
+            .then( (categories: Category[]) => {
 
                 if (categories.length === 0) {
                     return res.status(404).json({
                         ok: false,
                         message: 'No se encontraron registros'
                     })
-                } else {
+                } else {                    
+                     
+
                     res.status(200).json({
                         ok: true,
                         categories
@@ -120,19 +124,22 @@ export class CategoryController extends Repository<Category>  {
 
         let categoryRepo = getRepository(Category);
 
-        await categoryRepo.findOne({ id: categoryId }, { relations: ["products"] })
-            .then((catgory: Category | undefined) => {
+        await categoryRepo.findOne({ id: categoryId })
+            .then(async (category: Category | undefined) => {
 
-                if (!catgory || catgory === undefined) {
+                if (!category || category === undefined) {
                     return res.status(404).json({
                         ok: false,
                         message: `No se encontró un categoría para el id ${categoryId}`
                     });
                 }
 
+                let products = await categoryRepo.createQueryBuilder().relation(Category, "products").of(category).loadMany()
+                category["products"] = products;
+
                 res.status(200).json({
                     ok: true,
-                    catgory
+                    category
                 });
 
 

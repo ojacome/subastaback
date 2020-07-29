@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany } from "typeorm";
 import { IsNotEmpty } from "class-validator";
 import { Product } from "./product.model";
+import { UniqueName } from "../custom_validations/UniqueName";
 
 
 
@@ -13,6 +14,7 @@ export class Category {
 
   @Column()  
   @IsNotEmpty({ message: 'El nombre no debe estar vacío' })
+  @UniqueName(Category)
   name: string;
 
   @Column({nullable: true})
