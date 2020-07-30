@@ -4,6 +4,7 @@ import { Sale, Status } from "../models/sale.model";
 import { User } from "../models/user.model";
 import { Product } from "../models/product.model";
 import { validate } from "class-validator";
+import { isOferta } from "../helpers/sale.helper";
 
 
 @EntityRepository(Sale)
@@ -180,6 +181,15 @@ export class SaleController extends Repository<Sale>  {
                     });
                 }
 
+                
+                if(!isOferta(sale, Number(total))){
+
+                    return res.status(400).json({
+                        ok: false,
+                        message: "Tu oferta no ha sido aceptada.",
+                    });
+                }
+
                 sale.total = parseFloat(total);
                 sale.status = sale.status;
                 sale.product = sale.product;
@@ -213,7 +223,8 @@ export class SaleController extends Repository<Sale>  {
 
                         res.status(201).json({
                             ok: true,
-                            sale: saleUpdate
+                            sale: saleUpdate,
+                            message: 'Tu oferta fué ingresada, espera el correo de confirmación o puedes mejorar la oferta :)'
 
                         })
 
