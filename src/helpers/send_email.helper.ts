@@ -4,6 +4,7 @@ import { SERVICE_CORREO, USER_CORREO, PASS_CORREO } from '../global/environment'
 import { User } from '../models/user.model';
 import { IsEmail } from 'class-validator';
 import { getRepository } from 'typeorm';
+import { body } from './body_email.helper';
 
 const transporter = nodemailer.createTransport({
     service: SERVICE_CORREO,
@@ -24,27 +25,15 @@ let mailOptions = {
     text: 'sdfgsdfg',
     html: 'sfdgsf'
 }
-function bodyEmail(): string {
-
-    let html =
-        `
-    <br><h3>Tienes nuevas ofertas en las subastas</h3><br>
-    <p>Por favor ingresa 
-    <a href="http://localhost:4200/dashboard">aquí</a>
-    </p>
-    `
-
-    return html
-}
 
 export class Correo {
 
     static async sendCorreoElectronico() {
-        console.log("entra enviar correo")
+        
         let userAdmin: any = await getRepository(User).findOne({ isAdmin: true })
         mailOptions.to = userAdmin.email
         mailOptions.text = `Hola ${userAdmin.fullName},`
-        mailOptions.html = bodyEmail()
+        mailOptions.html = body
 
         transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
