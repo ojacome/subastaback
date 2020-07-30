@@ -269,6 +269,9 @@ export class UserController extends Repository<User>  {
                     })
                 }
 
+                //encriptar constraseña
+                user.password = bcrypt.hashSync(password, 10);
+
                 await userRepo.save(user)
                     .then((userUpdate: User) => {
 
@@ -280,6 +283,8 @@ export class UserController extends Repository<User>  {
                                 });
 
                         }
+
+                        userUpdate.password = ":("
 
                         res.status(201).json({
                                 ok: true,
