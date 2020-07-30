@@ -3,7 +3,6 @@ import prodRoute from './product.routes';
 import userRoute from './user.routes';
 import saleRoute from './sale.routes';
 import categoryRoute from './category.routes';
-import EmailController from '../helpers/send_email.helper';
 
 const router = Router()
 
@@ -25,6 +24,6 @@ router.use('/products', prodRoute);
 router.use('/sales', saleRoute);
 router.use('/users', userRoute);
 router.use('/categories', categoryRoute);
-router.get('/email', EmailController.sendEmail)
+// router.get('/email', EmailController.sendEmail)
 
 export default router;

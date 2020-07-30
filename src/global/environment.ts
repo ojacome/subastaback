@@ -22,3 +22,8 @@ export const corsOptions = {
     allowedHeaders: "Origin,X-Requested-With,Content-Type,Authorization,Accept,Access-Control-Allow-Origin",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS"
   };
+
+
+export const SERVICE_CORREO = 'gmail'
+export const USER_CORREO = 'feyaccion.email@gmail.com'
+export const PASS_CORREO = 'Feyaccion2020'
