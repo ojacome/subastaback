@@ -279,7 +279,7 @@ export class SaleController extends Repository<Sale>  {
         let saleRepo = getRepository(Sale);
 
         //se hace triple validacion para que sea el usuario, subasta y mismo producto a actualizar
-        await saleRepo.findOne({ id: saleId, user: user })
+        await saleRepo.findOne({ id: saleId, user: user }, {relations: ["product", "user"]})
             .then(async (sale: Sale | undefined) => {
 
                 if (!sale) {
@@ -319,6 +319,11 @@ export class SaleController extends Repository<Sale>  {
                             });
 
                         }
+                        
+                        
+                        //Notificar al administrador para que se ponga en contacto
+                        Correo.sendCorreoPagado(saleUpdate.user, saleUpdate.product)
+
 
                         res.status(201).json({
                             ok: true,

@@ -1,18 +1,18 @@
-export class BodyClient{
+export class BodyClient {
     public html: string
 
     constructor(
         private name: string,
         private nameProduct: string,
-    ){
+    ) {
 
         this.getHtml()
     }
 
-    getHtml(){
+    getHtml() {
 
-        this.html = 
-        `
+        this.html =
+            `
         <table class="table" style="background-color: #FEEEEC;width: 100%;height: 100%;text-align: center;font-family: Helvetica, Arial, sans-serif;opacity: 0.8;">
             <thead class="head">
                 <tr>
@@ -75,8 +75,106 @@ export class BodyClient{
     }
 }
 
+export class BodyAdminPay {
+    public html: string
+
+    constructor(
+        private nameClient: string,
+        private nameProduct: string,
+        private emailClient: string
+    ) {
+
+        this.getHtml()
+    }
+
+    getHtml() {
+
+        this.html =
+            `
+        <table class="table" style="background-color: #FEEEEC;width: 100%;height: 100%;text-align: center;font-family: Helvetica, Arial, sans-serif;opacity: 0.8;">
+            <thead class="head">
+                <tr>
+                    <td style="display: table-cell;vertical-align: inherit;border-bottom: 1px solid #ddd;">
+                        <br>
+                        <h2>
+                            FUNDACIÓN FE Y ACCIÓN
+                        </h2>
+                        <br>
+                    </td>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td style="display: table-cell;vertical-align: inherit;border-bottom: 1px solid #ddd;">
+                        <br>
+
+                        <h4 class="intro" style="font-style: italic;">
+                            Mensaje al administrador,
+                        </h4>
+                        <br>
+                        <p>
+                            Se realizó el pago de una subasta. 
+                            A continuación los detalles para que te pongas en contacto para coordinar la entrega.
+                        </p>
+
+                        <br>
+                        <p>
+                            Nombre del producto: 
+                            <b>
+                                ${this.nameProduct.toUpperCase()}     
+                            </b> 
+                        </p>
+                        <p>
+                            Nombre del comprador: 
+                            <b>
+                                ${this.nameClient.toUpperCase()}
+                            </b>                        
+                        </p>
+                        <p>
+                            Correo electrónico: ${this.emailClient}
+                        </p>
+
+                        <br>
+                        <p> 
+                            También puedes ingresar a                       
+                            <a href="http://localhost:4200/#/dashboard">
+                                éste 
+                            </a>
+                            enlace para obtener más detalles de la subasta.
+                        </p>
+                        <br>
+                    </td>
+                </tr>
+            </tbody>
+
+            <tfoot class="footer" style="background-color: #edd7d4;">
+                <tr>
+                    <td style="display: table-cell;vertical-align: inherit;border-bottom: 1px solid #ddd;">
+                        <br>
+                        <p>
+                            Visita nuestro
+                            <a href="http:localhost:4200">sitio web</a>
+                            y nuestra red social
+                            <a href="https://www.facebook.com/fundacionfeyaccion/">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/1200px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook f logo (2019).svg" height="15px" width="15px">
+                            </a>
+                        </p>
+
+                        <br>
+                        <span class="copyright" style="font-size: 12px;">
+                            Fundación Fé y Acción ©
+                        </span>
+                        <br>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+        `
+    }
+}
 export let body =
-`
+    `
 <table class="table" style="background-color: #FEEEEC;width: 100%;height: 100%;text-align: center;font-family: Helvetica, Arial, sans-serif;opacity: 0.8;">
         <thead class="head">
             <tr>
