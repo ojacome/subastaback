@@ -149,4 +149,6 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+
+src/global/environment.ts
 # End of https://www.toptal.com/developers/gitignore/api/node,visualstudiocode,windows
