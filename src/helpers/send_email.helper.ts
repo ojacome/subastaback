@@ -2,9 +2,10 @@ import nodemailer from 'nodemailer';
 import { Request, Response } from 'express';
 import { SERVICE_CORREO, USER_CORREO, PASS_CORREO } from '../global/environment';
 import { User } from '../models/user.model';
+import { Product } from '../models/product.model';
 import { IsEmail } from 'class-validator';
 import { getRepository } from 'typeorm';
-import { body } from './body_email.helper';
+import { body, BodyClient } from './body_email.helper';
 
 const transporter = nodemailer.createTransport({
     service: SERVICE_CORREO,
@@ -19,9 +20,12 @@ const transporter = nodemailer.createTransport({
     },
 });
 let mailOptions = {
-    from: 'admin@fundacionfeyaccion.com',
+    from: {
+        name: 'Fundación Fé y Acción',
+        address: 'feyaccion@admin.sist.com'
+    },
     to: 'sfgsfg@asdfadf',
-    subject: 'FUNDACIÓN FE Y ACCIÓN',
+    subject: 'SUBASTA - FUNDACIÓN FE Y ACCIÓN',
     text: 'sdfgsdfg',
     html: 'sfdgsf'
 }
@@ -34,6 +38,24 @@ export class Correo {
         mailOptions.to = userAdmin.email
         mailOptions.text = `Hola ${userAdmin.fullName},`
         mailOptions.html = body
+
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error)
+            }
+            else {
+                console.log('Correo enviado ' + info.response)
+            }
+        })
+    }
+
+    static sendCorreoCliente(user: User, product: Product) {
+                        
+        let body = new BodyClient(user.fullName, product.name)
+
+        mailOptions.to = user.email
+        mailOptions.text = `Hola ${user.fullName},`
+        mailOptions.html = body.html
 
         transporter.sendMail(mailOptions, function (error, info) {
             if (error) {

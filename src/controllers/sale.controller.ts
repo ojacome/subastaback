@@ -5,6 +5,7 @@ import { User } from "../models/user.model";
 import { Product } from "../models/product.model";
 import { validate } from "class-validator";
 import { isOferta } from "../helpers/sale.helper";
+import { Correo } from "../helpers/send_email.helper";
 
 
 @EntityRepository(Sale)
@@ -363,7 +364,7 @@ export class SaleController extends Repository<Sale>  {
         let saleRepo = getRepository(Sale);
 
         //se hace triple validacion para que sea el usuario, subasta y mismo producto a actualizar
-        await saleRepo.findOne({ id: saleId })
+        await saleRepo.findOne({ id: saleId }, {relations: ["product", "user"]})
             .then(async (sale: Sale | undefined) => {
 
                 if (!sale) {
@@ -371,7 +372,7 @@ export class SaleController extends Repository<Sale>  {
                         ok: false,
                         message: `No se encontró subasta con el id: ${saleId}`
                     });
-                }
+                }                
 
                 sale.total = sale.total;
                 sale.status = Status.Finalizado;
@@ -390,7 +391,9 @@ export class SaleController extends Repository<Sale>  {
                             error: errorsSale
                         }
                     })
-                }
+                }                                
+
+
 
                 await saleRepo.save(sale)
                     .then((saleUpdate: Sale) => {
@@ -403,6 +406,11 @@ export class SaleController extends Repository<Sale>  {
                             });
 
                         }
+
+                        
+                        //Enviar correo al cliente para pagar                        
+                        Correo.sendCorreoCliente(sale.user, sale.product)
+
 
                         res.status(201).json({
                             ok: true,
