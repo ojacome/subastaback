@@ -235,11 +235,11 @@ export class UserController extends Repository<User>  {
     public async updateUser(req: Request, res: Response) {
         
         let usuario: any = req.userToken;
-        let { email, password, fullName, address, phone } = req.body;
+        let { fullName, address, phone } = req.body;
 
         let userRepo = getRepository(User);
 
-        await userRepo.findOne({id: usuario.id})
+        await userRepo.findOne({id: usuario.id},{select: ["id","fullName","email","password","phone","address","isAdmin"]})
             .then(async (user: User | undefined) => {
 
                 if (!user) {
@@ -248,12 +248,14 @@ export class UserController extends Repository<User>  {
                             message: `No se encontró usuario con el id: ${usuario.id}`
                         });
                 }
+                // console.log(user)
 
-                user.email = email;
-                user.password = password;
+                // user.email = user.email;
+                // user.password = user.password;
                 user.fullName = fullName;
                 user.address = address;
                 user.phone = phone;
+                // user.isAdmin = user.isAdmin;
 
 
                 //Validaciones
@@ -269,8 +271,9 @@ export class UserController extends Repository<User>  {
                     })
                 }
 
-                //encriptar constraseña
-                user.password = bcrypt.hashSync(password, 10);
+                
+                // encriptar constraseña
+                // user.password = bcrypt.hashSync(password, 10);
 
                 await userRepo.save(user)
                     .then((userUpdate: User) => {

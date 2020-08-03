@@ -15,6 +15,7 @@ export class User {
   @Column({unique: true})
   @IsNotEmpty({ message: 'El email no debe estar vacío' })
   @IsEmail(undefined,{message:'Debe escribir un correo válido'})
+  @ValidateIf( o => !o.id)
   @UniqueName(User)
   email: string;
   

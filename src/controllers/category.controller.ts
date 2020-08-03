@@ -96,7 +96,7 @@ export class CategoryController extends Repository<Category>  {
 
                 res.status(201).json({
                     ok: true,
-                    product: categoryCreated
+                    category: categoryCreated
                 });
 
 
@@ -252,7 +252,7 @@ export class CategoryController extends Repository<Category>  {
         let categoryRepo = getRepository(Category);
 
 
-        await categoryRepo.findOne({ id: categoryId })
+        await categoryRepo.findOne({ id: categoryId }, {relations: ["products"]})
             .then(async (categoryDelete: Category | undefined) => {
 
                 if (!categoryDelete || categoryDelete === undefined) {
