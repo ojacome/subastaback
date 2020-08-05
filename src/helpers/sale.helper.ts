@@ -6,17 +6,29 @@ import { Correo } from "./send_email.helper"
 
 export const isOferta = (sale: Sale, oferta: number) => {         
     
-    if(oferta == sale.total ){ 
+    // console.log(sale)
 
-        Correo.sendCorreoElectronico()
-        return true
+    if(sale.user){
+        if(oferta >= sale.total + 1 ) {
+        
+            Correo.sendCorreoElectronico()
+            return true
+        }
+    }
+    else{
+        if(oferta == sale.total ){ 
+
+            Correo.sendCorreoElectronico()
+            return true
+        }
+        
+        if(oferta >= sale.total + 1 ) {
+            
+            Correo.sendCorreoElectronico()
+            return true
+        }
     }
     
-    if(oferta >= sale.total + 1 ) {
-        
-        Correo.sendCorreoElectronico()
-        return true
-    }
     
     return false
 }

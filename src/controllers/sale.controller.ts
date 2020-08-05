@@ -145,7 +145,7 @@ export class SaleController extends Repository<Sale>  {
     public async updateSale(req: Request, res: Response) {
 
         let saleId: number = Number(req.params.id);
-        let { productId, total } = req.body;
+        let { total } = req.body;
 
         let usuario: any = req.userToken;
 
@@ -159,20 +159,10 @@ export class SaleController extends Repository<Sale>  {
             });
         }
 
-        let productRepo = getRepository(Product);
-        let product: any = await productRepo.findOne({ id: productId });
-        if (!product || product === undefined) {
-
-            return res.status(404).json({
-                ok: false,
-                message: `No se encontró un Producto para el id: ${productId}`,
-            });
-        }
-
         let saleRepo = getRepository(Sale);
 
         //se hace triple validacion para que sea el usuario, subasta y mismo producto a actualizar
-        await saleRepo.findOne({ id: saleId, product: product })
+        await saleRepo.findOne({ id: saleId }, {relations: ["product", "user"]})
             .then(async (sale: Sale | undefined) => {
 
                 if (!sale) {
@@ -183,6 +173,7 @@ export class SaleController extends Repository<Sale>  {
                 }
 
                 
+                
                 if(!isOferta(sale, Number(total))){
 
                     return res.status(400).json({
@@ -192,10 +183,8 @@ export class SaleController extends Repository<Sale>  {
                 }
 
                 sale.total = parseFloat(total);
-                sale.status = sale.status;
-                sale.product = sale.product;
                 sale.user = user;
-
+                
 
                 //Validaciones
                 const errorsSale = await validate(sale);
