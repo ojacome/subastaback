@@ -354,6 +354,7 @@ export class SaleController extends Repository<Sale>  {
     public async updateFinalizadoSale(req: Request, res: Response) {
 
         let saleId: number = Number(req.params.id);                
+        let { status} = req.body
 
         let saleRepo = getRepository(Sale);
 
@@ -369,7 +370,7 @@ export class SaleController extends Repository<Sale>  {
                 }                
 
                 sale.total = sale.total;
-                sale.status = Status.Finalizado;
+                sale.status = status;
                 sale.product = sale.product;
                 sale.user = sale.user;
 
