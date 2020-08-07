@@ -52,6 +52,51 @@ export class SaleController extends Repository<Sale>  {
     }	
 
     /**
+     * Consulta las subasta para Usuario
+     * debe indicar el status por parametro
+     * 
+     *
+     * @param {Request} req
+     * @param {Response} res
+     * @returns
+     * @memberof SaleController
+     */
+    public async indexSalexStatusUser(req: Request, res: Response) {
+                
+        const status: any = req.params.status;        
+        const usuario: any = req.userToken;
+        
+        let user: any = await getRepository(User).findOne({ id: usuario.id });
+        if (!user || user === undefined) {
+
+            return res.status(404).json({
+                ok: false,
+                message: `No se encontró un Usuario para el id: ${usuario.id}`,
+            });
+        }
+
+        await getRepository(Sale).find({
+            where: { status: status, user: user},
+            relations: ["user", "product"]
+            })
+            .then((sales: Sale[]) => {                                                                 
+                                
+                //repuesta puede ser cero registros pero necesito que llegué así el dato
+                res.status(200).json({
+                    ok: true,
+                    sales
+                })                
+            })
+            .catch((err: Error) => {
+                return res.status(500).json({
+                    ok: false,
+                    message: "Error al obtener todas las subastas",
+                    error: err.message
+                })
+            });
+    }
+
+    /**
      * Consultar las subastas para administrador
      * debe indicar el status
      * si trae con ofertas (s) o sin ofertas(n)

@@ -11,14 +11,19 @@ const router = Router();
     router.get('/', sales.indexSale)    
     router.get('/:id', sales.showSale); 
     
+
     
-    //rutas con auht    
+    //rutas con auth
+    router.get('/user/:status', verificaToken, sales.indexSalexStatusUser);     
+
     router.put('/:id', verificaToken, sales.updateSale);
     router.put('/paypal/:id', verificaToken, sales.updatePaySale);
 
+    
 
     //rutas admin
-    router.get('/admin/:status/:user', [verificaToken, verificaSuperAdmin], sales.indexSalexStatus)   
+    router.get('/admin/:status/:user', [verificaToken, verificaSuperAdmin], sales.indexSalexStatus)  
+
     router.put('/finished/:id', [verificaToken, verificaSuperAdmin], sales.updateFinalizadoSale);
     
        
