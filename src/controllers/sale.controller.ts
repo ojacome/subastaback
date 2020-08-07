@@ -354,8 +354,8 @@ export class SaleController extends Repository<Sale>  {
     public async updateFinalizadoSale(req: Request, res: Response) {
 
         let saleId: number = Number(req.params.id);                
-        let { status} = req.body
-
+        let { status } = req.body
+        
         let saleRepo = getRepository(Sale);
 
         //se hace triple validacion para que sea el usuario, subasta y mismo producto a actualizar
@@ -374,7 +374,7 @@ export class SaleController extends Repository<Sale>  {
                 sale.product = sale.product;
                 sale.user = sale.user;
 
-
+                
                 //Validaciones
                 const errorsSale = await validate(sale);
 
@@ -387,7 +387,7 @@ export class SaleController extends Repository<Sale>  {
                         }
                     })
                 }                                
-
+                
 
 
                 await saleRepo.save(sale)

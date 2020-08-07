@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, Double, ManyToOne, OneToOne, JoinColumn } from "typeorm";
 import { User } from "./user.model";
 import { Product } from "./product.model";
-import { IsNumber, IsNotEmpty, min, Min } from "class-validator";
+import { IsNumber, IsNotEmpty, min, Min, IsEnum } from "class-validator";
 
 export enum Status {        
     Disponible = 'd',
@@ -21,6 +21,9 @@ export class Sale {
     type:'enum',
     enum: Status,
     default: Status.Disponible
+  })
+  @IsEnum(Status,{
+    message:'Valor no permitido'
   })
   status: Status;
 
