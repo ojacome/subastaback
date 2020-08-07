@@ -32,7 +32,7 @@ let mailOptions = {
 
 export class Correo {
 
-    static async sendCorreoElectronico() {
+    static async NuevaOferta() {
         
         let userAdmin: any = await getRepository(User).findOne({ isAdmin: true })
         mailOptions.to = userAdmin.email
@@ -49,7 +49,7 @@ export class Correo {
         })
     }
 
-    static sendCorreoCliente(user: User, product: Product) {
+    static OfertaAceptada(user: User, product: Product) {
                         
         let body = new BodyClient(user.fullName, product.name)
 
@@ -67,7 +67,7 @@ export class Correo {
         })
     }
 
-    static async sendCorreoPagado(user: User, product: Product) {
+    static async OfertaPagada(user: User, product: Product) {
         
         let body = new BodyAdminPay(user.fullName, product.name, user.email)
 

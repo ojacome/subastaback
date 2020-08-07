@@ -4,7 +4,7 @@ import { Sale, Status } from "../models/sale.model";
 import { User } from "../models/user.model";
 import { Product } from "../models/product.model";
 import { validate } from "class-validator";
-import { isOferta } from "../helpers/sale.helper";
+import { isOferta, enviarCorreo, TipoCorreo } from "../helpers/sale.helper";
 import { Correo } from "../helpers/send_email.helper";
 
 
@@ -356,7 +356,7 @@ export class SaleController extends Repository<Sale>  {
                         
                         
                         //Notificar al administrador para que se ponga en contacto
-                        Correo.sendCorreoPagado(saleUpdate.user, saleUpdate.product)
+                        enviarCorreo(TipoCorreo.OfertaPagada, saleUpdate.user, saleUpdate.product)                        
 
 
                         res.status(201).json({
@@ -448,8 +448,9 @@ export class SaleController extends Repository<Sale>  {
                         }
 
                         
-                        //Enviar correo al cliente para pagar                        
-                        Correo.sendCorreoCliente(sale.user, sale.product)
+                        //Enviar correo al cliente para pagar    
+                        enviarCorreo(TipoCorreo.OfertaAceptada, sale.user, sale.product)                    
+                        
 
 
                         res.status(201).json({
