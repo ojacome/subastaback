@@ -7,7 +7,8 @@ import { Product } from "../models/product.model"
 export enum TipoCorreo{
     OfertaNueva     = "n",
     OfertaAceptada  = "a",
-    OfertaPagada    = "p"
+    OfertaPagada    = "p",
+    ForgotPassword  = "f"
 }
 
 
@@ -53,6 +54,9 @@ export const enviarCorreo = (tipo: TipoCorreo, user?: any, product?: any) => {
             break
         case TipoCorreo.OfertaPagada:
             Correo.OfertaPagada(user, product)
-            break        
+            break   
+        case TipoCorreo.ForgotPassword:
+            Correo.ForgotPassword(user)
+            break   
     }
 }

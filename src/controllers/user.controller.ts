@@ -4,7 +4,9 @@ import { User } from "../models/user.model";
 import { validate } from "class-validator";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { SEED } from "../global/environment";
+import { SEED, resetPassSEED } from "../global/environment";
+import { send } from "process";
+import { enviarCorreo, TipoCorreo } from "../helpers/sale.helper";
 
 @EntityRepository(User)
 export class UserController extends Repository<User>  {
@@ -388,5 +390,53 @@ export class UserController extends Repository<User>  {
             })
     }
 
+    public async  forgotPassword  (req: Request, res: Response) {               
+                        
+		let email: string = req.body.email;		
+		
+		let userRepository = getRepository(User);
+
+		await userRepository.findOne({  where: { email: email }  })
+			.then((usuario: User | undefined) => {
+
+
+                //si entra es porque no está registrado 
+				if (!usuario || usuario === undefined) {
+
+					return res.status(400)
+						.json({
+							ok: false,
+							message: 'El correo no está registrado.'
+						});
+
+				}			
+                
+                
+				//Crear toquen...   {id: usuario.id} info agregada al payload, sera utilizada en el decoded en la verificacion del token
+				let token = jwt.sign({ id: usuario.id }, resetPassSEED, { expiresIn: 30 }); //expira en 24h 
+
+                let user = {
+                    fullName: usuario.fullName,
+                    email:  usuario.email,            
+                    token
+                }   
+                enviarCorreo(TipoCorreo.ForgotPassword, user)
+                
+				res.status(200).json({
+					ok: true,					
+					message: 'Le enviamos un correo electrónico, para completar el cambio de su contraseña.'
+				})
+
+			}).catch((err: Error) => {
+
+				return res.status(500).json({
+					ok: false,
+					mensaje: 'Error al buscar usuario',
+					error: err.message
+				});
+
+			})
+
+	}
     
 }

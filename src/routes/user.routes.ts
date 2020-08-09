@@ -20,6 +20,7 @@ const router = Router();
     // rutas publicas
     router.post('/',  users.createUser);
     router.post('/login',  users.loginPost);
+    router.post('/forgot-password',  users.forgotPassword);
 
 
        

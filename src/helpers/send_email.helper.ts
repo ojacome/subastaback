@@ -5,7 +5,7 @@ import { User } from '../models/user.model';
 import { Product } from '../models/product.model';
 import { IsEmail } from 'class-validator';
 import { getRepository } from 'typeorm';
-import { body, BodyClient, BodyAdminPay } from './body_email.helper';
+import { body, BodyClient, BodyAdminPay, BodyFortgotPass } from './body_email.helper';
 
 const transporter = nodemailer.createTransport({
     service: SERVICE_CORREO,
@@ -74,6 +74,24 @@ export class Correo {
         let userAdmin: any = await getRepository(User).findOne({ isAdmin: true })
         mailOptions.to = userAdmin.email
         mailOptions.text = `Hola ${userAdmin.fullName},`
+        mailOptions.html = body.html
+
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error)
+            }
+            else {
+                console.log('Correo enviado ' + info.response)
+            }
+        })
+    }
+
+    static async ForgotPassword(user: any) {
+        
+        let body = new BodyFortgotPass(user.fullName, user.token)
+        
+        mailOptions.to = user.email
+        mailOptions.text = `Hola ${user.fullName},`
         mailOptions.html = body.html
 
         transporter.sendMail(mailOptions, function (error, info) {
