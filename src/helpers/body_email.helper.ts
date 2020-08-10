@@ -206,7 +206,7 @@ export class BodyFortgotPass {
 
         <tbody>
             <tr>
-                <td class="body-email" style="padding-left: 200px;padding-right: 200px;text-align: justify;">
+                <td class="body-email" style="padding-left: 20%;padding-right: 20%;text-align: justify;">
                     <br>
 
                     <h4 class="intro" style="font-style: italic;">

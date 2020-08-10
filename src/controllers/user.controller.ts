@@ -434,7 +434,7 @@ export class UserController extends Repository<User>  {
                 
 				res.status(200).json({
 					ok: true,					
-					message: 'Le enviamos un enlace al correo electrónico para reestablecer la contraseña'
+					message: 'Te enviamos un enlace al correo electrónico para restablecer la contraseña.'
 				})
 
 			}).catch((err: Error) => {
