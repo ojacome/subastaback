@@ -390,6 +390,14 @@ export class UserController extends Repository<User>  {
             })
     }
 
+
+    /**
+     * Método que envia correo con el token para reestablecer contraseña
+     *
+     * @param {Request} req
+     * @param {Response} res
+     * @memberof UserController
+     */
     public async  forgotPassword  (req: Request, res: Response) {               
                         
 		let email: string = req.body.email;		
@@ -413,18 +421,20 @@ export class UserController extends Repository<User>  {
                 
                 
 				//Crear toquen...   {id: usuario.id} info agregada al payload, sera utilizada en el decoded en la verificacion del token
-				let token = jwt.sign({ id: usuario.id }, resetPassSEED, { expiresIn: 30 }); //expira en 24h 
+				let token = jwt.sign({ id: usuario.id }, resetPassSEED, { expiresIn: 86400 }); //expira en 24h 
 
                 let user = {
                     fullName: usuario.fullName,
                     email:  usuario.email,            
                     token
                 }   
+                // console.log(user)
+                //enviar correo con enlace y token
                 enviarCorreo(TipoCorreo.ForgotPassword, user)
                 
 				res.status(200).json({
 					ok: true,					
-					message: 'Le enviamos un correo electrónico, para completar el cambio de su contraseña.'
+					message: 'Le enviamos un enlace al correo electrónico para reestablecer la contraseña'
 				})
 
 			}).catch((err: Error) => {
@@ -437,6 +447,107 @@ export class UserController extends Repository<User>  {
 
 			})
 
+    }
+
+
+    /** 
+     * Metodo que reestablece contraseña
+     * recibe token y nueva contraseña
+     *
+     * @param {Request} req
+     * @param {Response} res
+     * @memberof UserController
+     */
+    public async  resetPassword  (req: Request, res: Response) {               
+                        
+        let token: any = req.params.token;
+		let password: string = req.body.password;		
+                
+        //verifico si existe token
+        jwt.verify(token, resetPassSEED, async (err: any, decoded: any) => {
+            if (err) {
+              return res.status(404).json({
+                ok: false,
+                message: 'Código incorrecto o ha caducado.',
+                error: err
+              });
+            }
+
+            // ahora obtengo el id del usuario del token
+            let userId = decoded.id
+            let userRepository = getRepository(User);
+
+            await userRepository.findOne({
+                select: ["fullName","password","id","email","isAdmin","phone","address"],
+                where: {id: userId}  
+                })
+			.then(async (usuario: User | undefined) => {
+                      
+                if (!usuario) {
+                    return res.status(404).json({
+                            ok: false,
+                            message: `No se encontró usuario con el id: ${userId}`
+                        });
+                }
+
+                usuario.password = password
+
+                //Validaciones para contraseña
+                const errorsUser = await validate(usuario);
+        
+                if (errorsUser.length > 0) {
+                    return res.status(400).json({
+                        ok: false,
+                        errors: {
+                            validation: true,
+                            error: errorsUser
+                        }
+                    })
+                }
+
+                //encriptar constraseña
+                usuario.password = bcrypt.hashSync(password, 10);
+                
+                await userRepository.save(usuario)
+                    .then((userUpdate: User) => {
+
+                        if (!userUpdate) {
+
+                            return res.status(409).json({
+                                    ok: false,
+                                    message: "No se pudo actualizar contraseña",
+                                });
+
+                        }
+
+                        userUpdate.password = ":("
+
+                        res.status(201).json({
+                                ok: true,
+                                user: userUpdate
+
+                            })
+
+                    }).catch((err: Error) => {
+
+                        return res.status(500).json({
+                                ok: false,
+                                message: "Error al actualizar contraseña",
+                                error: err.message
+                            });
+
+                    });				
+
+			}).catch((err: Error) => {
+
+				return res.status(500).json({
+					ok: false,
+					mensaje: 'Error al buscar usuario',
+					error: err.message
+				});
+
+			})
+          });          		
 	}
     
 }
