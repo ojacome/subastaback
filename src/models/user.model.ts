@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany } from "typeorm";
 import { Sale } from "./sale.model";
-import { IsDefined, IsNotEmpty, IsEmail, IsInt, IsNumberString, ValidateIf } from "class-validator";
+import { IsDefined, IsNotEmpty, IsEmail, IsInt, IsNumberString, ValidateIf, MinLength, Matches } from "class-validator";
 import { UniqueName } from "../custom_validations/UniqueName";
 
 
@@ -21,6 +21,7 @@ export class User {
   
   @Column({select: false})
   @IsNotEmpty({ message: 'La contraseña no debe estar vacío' })
+  @Matches(/(?=.*[0-9])(?=.*[a-zA-Z])(?=\S+$).{8,}/,{ message: 'Escriba mínimo 8 caracteres, con al menos letras y números.'})
   password: string;
   
   @Column()

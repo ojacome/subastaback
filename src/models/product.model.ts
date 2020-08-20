@@ -23,7 +23,7 @@ export class Product {
   @Column({type: 'double'})
   @IsNotEmpty({ message: 'El precio no debe estar vacío' })
   @IsNumber({maxDecimalPlaces: 2},{message: 'El número ingresado es inválido'})
-  @Min(1,{message: 'La mínima cantidad es de 1.'})
+  @Min(5,{message: 'La mínima cantidad es de 5.'})
   price: number;
 
   @Column({ default: true })
