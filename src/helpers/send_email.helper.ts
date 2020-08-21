@@ -27,7 +27,12 @@ let mailOptions = {
     to: 'sfgsfg@asdfadf',
     subject: 'SUBASTA - FUNDACIÓN FE Y ACCIÓN',
     text: 'sdfgsdfg',
-    html: 'sfdgsf'
+    html: 'sfdgsf',
+    attachments: [{
+        filename: 'logo_recortado.png',
+        path: 'D:/universidad/titulacion/subastaback/dist/assets/img/logo_recortado.png',
+        cid: '123logofundacion' //same cid value as in the html img src
+    }]
 }
 
 export class Correo {
