@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { getRepository } from "typeorm";
-import { Sale } from "../models/sale.model";
+import { Sale, Status } from "../models/sale.model";
 import *  as excel from 'exceljs'
 
 
@@ -68,7 +68,7 @@ export class ReportController {
 		console.log(startDate, endDate);
 		
 		
-        let sales =  await 
+        let query =  await 
         getRepository(Sale)
         .createQueryBuilder("sale")        
         .innerJoin("sale.user","user")
@@ -83,11 +83,91 @@ export class ReportController {
         .addSelect("product.name","product_name")
         .addSelect("product.description","description")
         .where("sale.status = :status", { status: status})
-        .andWhere("sale.updatedAt BETWEEN :start AND :end", {start: startDate, end: endDate})  
-        .getRawMany()
+                
 
-		return sales;
-	}
+        if(status === Status.Pagado){
+            query.andWhere("sale.updatedAt BETWEEN :start AND :end", {start: startDate, end: endDate})  
+        }
+
+		return query.getRawMany();
+    }
+
+    /**
+     * Retorna las columnas y nombre para hojas en los reportes
+     *
+     * @param {string} status enum Status subasta
+     * @param {string} user puede ser s: con oferta
+     * @returns
+     * @memberof ReportController
+     */
+    getHeadersSheetName(status: string, user: string){
+        let headers: any
+        let sheet_name: any
+
+        switch (status) {
+            case Status.Disponible:
+
+                if(user==='s'){
+
+                    headers= [
+                        { header: 'Código',                 key: 'id'},
+                        { header: 'Ofertante',              key: 'user_name'} ,
+                        { header: 'Fecha de oferta',        key: 'fecha_pago'} ,
+                        { header: 'Valor',                  key: 'total'} ,
+                        { header: 'Producto',               key: 'product_name'} ,
+                        { header: 'Descripción',            key: 'description'} ,
+                    ]
+                    sheet_name = "Subastas Con Oferta"
+                }
+                else{
+
+                    headers= [
+                        { header: 'Código',                 key: 'id'},
+                        { header: 'Producto',               key: 'product_name'} ,
+                        { header: 'Descripción',            key: 'description'} ,
+                        { header: 'Valor mínimo',                  key: 'total'} ,
+                    ]
+                    sheet_name = "Subastas Sin Oferta"
+                }
+                
+                break;
+
+            case Status.Finalizado:
+                headers= [
+                    { header: 'Código',                 key: 'id'},
+                    { header: 'Ganador',                key: 'user_name'} ,
+                    { header: 'Email',                  key: 'email'} ,
+                    { header: 'Dirección',              key: 'address'} ,
+                    { header: 'Teléfono',               key: 'phone'} ,
+                    { header: 'Producto',               key: 'product_name'} ,
+                    { header: 'Descripción',            key: 'description'} ,
+                    { header: 'Valor a pagar',                 key: 'total'} ,
+                    { header: 'Fecha de aprobación',    key: 'fecha_pago'} ,
+                ]
+                sheet_name = "Subastas Finalizadas"
+                break;
+
+            case Status.Pagado:
+                headers= [
+                    { header: 'Código',         key: 'id'},
+                    { header: 'Ganador',        key: 'user_name'} ,
+                    { header: 'Email',          key: 'email'} ,
+                    { header: 'Dirección',      key: 'address'} ,
+                    { header: 'Teléfono',       key: 'phone'} ,
+                    { header: 'Producto',       key: 'product_name'} ,
+                    { header: 'Descripción',    key: 'description'} ,
+                    { header: 'Valor pagado',   key: 'total'} ,
+                    { header: 'Fecha de pago',   key: 'fecha_pago'} ,
+                ]
+                sheet_name = "Subastas Pagadas"
+                break;    
+
+            default:
+                break;
+        }
+
+        return {headers , sheet_name}
+    }
     
     /**
      * Consultar las subastas para administrador
@@ -120,22 +200,15 @@ export class ReportController {
 
         await this.getData(startDate, endDate, status, withUser )								
             .then(async (sales) =>{
-                                
-                let stream: Buffer = await this.createExcel([
-                    { header: 'Código',         key: 'id'},
-                    { header: 'Ganador',        key: 'user_name'} ,
-                    { header: 'Email',          key: 'email'} ,
-                    { header: 'Dirección',      key: 'address'} ,
-                    { header: 'Teléfono',       key: 'phone'} ,
-                    { header: 'Producto',       key: 'product_name'} ,
-                    { header: 'Descripción',    key: 'description'} ,
-                    { header: 'Valor pagado',   key: 'total'} ,
-                    { header: 'Fecha de pago',   key: 'fecha_pago'} ,
-                ], sales, "Subastas Pagadas");
+                 
+                
+                let headers = this.getHeadersSheetName(status,withUser).headers
+                let sheet_name = this.getHeadersSheetName(status,withUser).sheet_name
+                let stream: Buffer = await this.createExcel(headers, sales, sheet_name);
         
                 
                 res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-                res.setHeader('Content-Disposition', `attachment; filename=SubastasPagadas${Date.now().toString()}.xlsx`);
+                res.setHeader('Content-Disposition', `attachment; filename=Subastas${Date.now().toString()}.xlsx`);
                 res.setHeader('Content-Length', stream.length);
                 res.send(stream);
             })
