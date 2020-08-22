@@ -10,7 +10,7 @@ const router = Router();
 
     
     // rutas admin
-    router.post('/status/:status/user/:user', [verificaToken, verificaSuperAdmin],  report.indexSalexStatus);
+    router.post('/status/:status/user/:user', [verificaToken, verificaSuperAdmin],  report.reportSalexStatus);
 
        
     
