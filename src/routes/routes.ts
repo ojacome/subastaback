@@ -3,6 +3,7 @@ import prodRoute from './product.routes';
 import userRoute from './user.routes';
 import saleRoute from './sale.routes';
 import categoryRoute from './category.routes';
+import reportRoute from './report.routes';
 
 const router = Router()
 
@@ -20,10 +21,11 @@ router.get('/', (req: Request,res: Response) => {
 
 
 
-router.use('/products', prodRoute);
-router.use('/sales', saleRoute);
-router.use('/users', userRoute);
-router.use('/categories', categoryRoute);
+router.use('/products',     prodRoute);
+router.use('/sales',        saleRoute);
+router.use('/users',        userRoute);
+router.use('/categories',   categoryRoute);
+router.use('/reports',      reportRoute);
 // router.get('/email', EmailController.sendEmail)
 
 export default router;
