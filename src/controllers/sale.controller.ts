@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { EntityRepository, Repository, getRepository, DeleteResult } from "typeorm";
+import { EntityRepository, Repository, getRepository, DeleteResult, Between } from "typeorm";
 import { Sale, Status } from "../models/sale.model";
 import { User } from "../models/user.model";
 import { Product } from "../models/product.model";
@@ -12,6 +12,21 @@ import { Correo } from "../helpers/send_email.helper";
 export class SaleController extends Repository<Sale>  {
 
 
+    /**
+     * Metodo para obtener incio y fin del mes actual
+     *
+     * @private
+     * @returns
+     * @memberof ReportController
+     */
+    private datesMonth(){
+
+        let now = new Date(); 
+        let init = new Date(now.getFullYear(), now.getMonth(), 1);
+        let last = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+        return {init, last};
+    }
 
 
 	/**
@@ -105,39 +120,57 @@ export class SaleController extends Repository<Sale>  {
      * @param {Response} res
      * @memberof SaleController
      */
-    public async indexSalexStatus(req: Request, res: Response) {
+    public indexSalexStatus = async(req: Request, res: Response) => {
         
         const status: any = req.params.status;
         const withUser: any = req.params.user;
 
-        await getRepository(Sale).find({
-            where: { status: status },
-            relations: ["user", "product"]
-            })
-            .then((sales: Sale[]) => {
+        let {start, end} =  req.body;            
 
-                if (sales.length === 0) {
-                    return res.status(404).json({
-                        ok: false,
-                        message: 'No se encontraron registros'
-                    })
-                }                  
-                
-                if(withUser==='s'){ sales = sales.filter( sales => sales.user) }
-                else { sales = sales.filter( sales => !sales.user) }
-                                    
-                res.status(200).json({
-                    ok: true,
-                    sales
-                })                
+        //validaciones      
+        let startDate = this.datesMonth().init;
+        let endDate = this.datesMonth().last;
+                        
+        if(start !== null && start !=='' && start !== undefined){
+                startDate = new Date(start)
+        }                
+        if(end !== null && end !== '' && end !== undefined){
+                endDate = new Date(end)  
+        } 
+
+
+        let query =  await 
+        getRepository(Sale)
+        .createQueryBuilder("sale") 
+        .leftJoinAndSelect("sale.product","product")
+        .leftJoinAndSelect("sale.user","user")
+        .where("sale.status= :status", { status: status })
+
+        if(status === Status.Pagado){
+            query.andWhere("sale.updatedAt BETWEEN :start AND :end", {start: startDate, end: endDate})  
+        }
+
+
+
+        query
+        .getMany()
+        .then((sales: Sale[]) => {                              
+                                   
+            if(withUser==='s'){ sales = sales.filter( sales => sales.user) }
+            else { sales = sales.filter( sales => !sales.user) }
+                                
+            res.status(200).json({
+                ok: true,
+                sales
+            })                
+        })
+        .catch((err: Error) => {
+            return res.status(500).json({
+                ok: false,
+                message: "Error al obtener todas las subastas",
+                error: err.message
             })
-            .catch((err: Error) => {
-                return res.status(500).json({
-                    ok: false,
-                    message: "Error al obtener todas las subastas",
-                    error: err.message
-                })
-            });
+        });
     }
 
 	/**

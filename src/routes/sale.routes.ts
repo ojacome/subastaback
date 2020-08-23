@@ -22,7 +22,7 @@ const router = Router();
     
 
     //rutas admin
-    router.get('/admin/:status/:user', [verificaToken, verificaSuperAdmin], sales.indexSalexStatus)  
+    router.post('/admin/:status/:user', [verificaToken, verificaSuperAdmin], sales.indexSalexStatus)  
 
     router.put('/finished/:id', [verificaToken, verificaSuperAdmin], sales.updateFinalizadoSale);
     
