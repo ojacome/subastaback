@@ -9,6 +9,7 @@ const router = Router();
     
     //rutas publicas
     router.get('/category/:categoryId?', sales.indexSale)    
+    router.get('/search/:termino', sales.search)    
     router.get('/:id', sales.showSale); 
     
 

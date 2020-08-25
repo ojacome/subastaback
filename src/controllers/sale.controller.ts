@@ -29,6 +29,41 @@ export class SaleController extends Repository<Sale>  {
         return {init, last};
     }
 
+    /**
+     * Busqueda de subastas disponibles por NOMBRE DEL PRODUCTO
+     *
+     * @param {Request} req
+     * @param {Response} res
+     * @memberof SaleController
+     */
+    public async search(req: Request, res: Response) {
+
+        const termino = req.params.termino;     
+        
+        const query = await
+        getRepository(Sale)
+        .createQueryBuilder("s")
+        .leftJoinAndSelect("s.product", "product")
+        .leftJoinAndSelect("s.user", "user")        
+        .where("s.status= :status", { status: Status.Disponible})    
+        .andWhere("product.name like :name", { name: '%' + termino + '%' })
+        .getMany()
+        .then((sales: Sale[]) => {
+            
+            res.status(200).json({
+                ok: true,
+                sales
+            })
+            
+        })
+        .catch((err: Error) => {
+            return res.status(500).json({
+                ok: false,
+                message: "Error al buscar prodcutos disponibles",
+                error: err.message
+            })
+        });
+    }
 
 	/**
      * Consultar las subastas en status disponibles
@@ -79,7 +114,48 @@ export class SaleController extends Repository<Sale>  {
     }	
 
     /**
-     * Consulta las subasta para Usuario
+     * Consultar subasta status disponible por ID
+     *
+     * @param {Request} req
+     * @param {Response} res
+     * @memberof SaleController
+     */
+    public async showSale(req: Request, res: Response) {
+
+        const saleId: number = Number(req.params.id);
+
+        let saleRepo = getRepository(Sale);
+
+        await saleRepo.findOne({ id: saleId, status: Status.Disponible }, { relations: ["user", "product"] })
+            .then((sale: Sale | undefined) => {
+
+                if (!sale || sale === undefined) {
+                    return res.status(404).json({
+                        ok: false,
+                        message: `No se encontró una subasta para el id ${saleId}`
+                    });
+                }
+
+                res.status(200).json({
+                    ok: true,
+                    sale
+                });
+
+
+            }).catch((err: Error) => {
+
+                return res.status(500).json({
+                    ok: false,
+                    message: 'Error al buscar la subasta',
+                    error: err.message
+                })
+
+            });
+    }
+    
+
+    /**
+     * Consulta las subasta para Usuario LOGUEADO
      * debe indicar el status por parametro
      * 
      *
@@ -124,109 +200,7 @@ export class SaleController extends Repository<Sale>  {
     }
 
     /**
-     * Consultar las subastas para administrador
-     * debe indicar el status
-     * si trae con ofertas (s) o sin ofertas(n)
-     *
-     * @param {Request} req
-     * @param {Response} res
-     * @memberof SaleController
-     */
-    public indexSalexStatus = async(req: Request, res: Response) => {
-        
-        const status: any = req.params.status;
-        const withUser: any = req.params.user;
-
-        let {start, end} =  req.body;            
-
-        //validaciones      
-        let startDate = this.datesMonth().init;
-        let endDate = this.datesMonth().last;
-                        
-        if(start !== null && start !=='' && start !== undefined){
-                startDate = new Date(start)
-        }                
-        if(end !== null && end !== '' && end !== undefined){
-                endDate = new Date(end)  
-        } 
-
-
-        let query =  await 
-        getRepository(Sale)
-        .createQueryBuilder("sale") 
-        .leftJoinAndSelect("sale.product","product")
-        .leftJoinAndSelect("sale.user","user")
-        .where("sale.status= :status", { status: status })
-
-        if(status === Status.Pagado){
-            query.andWhere("sale.updatedAt BETWEEN :start AND :end", {start: startDate, end: endDate})  
-        }
-
-
-
-        query
-        .getMany()
-        .then((sales: Sale[]) => {                              
-                                   
-            if(withUser==='s'){ sales = sales.filter( sales => sales.user) }
-            else { sales = sales.filter( sales => !sales.user) }
-                                
-            res.status(200).json({
-                ok: true,
-                sales
-            })                
-        })
-        .catch((err: Error) => {
-            return res.status(500).json({
-                ok: false,
-                message: "Error al obtener todas las subastas",
-                error: err.message
-            })
-        });
-    }
-
-	/**
-     * Consultar subasta status disponible por ID
-     *
-     * @param {Request} req
-     * @param {Response} res
-     * @memberof SaleController
-     */
-    public async showSale(req: Request, res: Response) {
-
-        const saleId: number = Number(req.params.id);
-
-        let saleRepo = getRepository(Sale);
-
-        await saleRepo.findOne({ id: saleId, status: Status.Disponible }, { relations: ["user", "product"] })
-            .then((sale: Sale | undefined) => {
-
-                if (!sale || sale === undefined) {
-                    return res.status(404).json({
-                        ok: false,
-                        message: `No se encontró una subasta para el id ${saleId}`
-                    });
-                }
-
-                res.status(200).json({
-                    ok: true,
-                    sale
-                });
-
-
-            }).catch((err: Error) => {
-
-                return res.status(500).json({
-                    ok: false,
-                    message: 'Error al buscar la subasta',
-                    error: err.message
-                })
-
-            });
-    }
-
-	/**
-     * Actualizar con nueva oferta por ID
+     * Actualizar con nueva oferta por ID LOGUEADO
      *
      * @param {Request} req
      * @param {Response} res
@@ -333,7 +307,7 @@ export class SaleController extends Repository<Sale>  {
     }
 
     /**
-     * Actualizar por ID status pagado
+     * Actualizar por ID status pagado LOGUEADO
      *
      * @param {Request} req
      * @param {Response} res
@@ -434,8 +408,74 @@ export class SaleController extends Repository<Sale>  {
 
     }
 
+
+
+
     /**
-     * Actualizar por ID status finalizado
+     * Consultar las subastas para ADMIN
+     * debe indicar el status
+     * si trae con ofertas (s) o sin ofertas(n)
+     *
+     * @param {Request} req
+     * @param {Response} res
+     * @memberof SaleController
+     */
+    public indexSalexStatus = async(req: Request, res: Response) => {
+        
+        const status: any = req.params.status;
+        const withUser: any = req.params.user;
+
+        let {start, end} =  req.body;            
+
+        //validaciones      
+        let startDate = this.datesMonth().init;
+        let endDate = this.datesMonth().last;
+                        
+        if(start !== null && start !=='' && start !== undefined){
+                startDate = new Date(start)
+        }                
+        if(end !== null && end !== '' && end !== undefined){
+                endDate = new Date(end)  
+        } 
+
+
+        let query =  await 
+        getRepository(Sale)
+        .createQueryBuilder("sale") 
+        .leftJoinAndSelect("sale.product","product")
+        .leftJoinAndSelect("sale.user","user")
+        .where("sale.status= :status", { status: status })
+
+        if(status === Status.Pagado){
+            query.andWhere("sale.updatedAt BETWEEN :start AND :end", {start: startDate, end: endDate})  
+        }
+
+
+
+        query
+        .getMany()
+        .then((sales: Sale[]) => {                              
+                                   
+            if(withUser==='s'){ sales = sales.filter( sales => sales.user) }
+            else { sales = sales.filter( sales => !sales.user) }
+                                
+            res.status(200).json({
+                ok: true,
+                sales
+            })                
+        })
+        .catch((err: Error) => {
+            return res.status(500).json({
+                ok: false,
+                message: "Error al obtener todas las subastas",
+                error: err.message
+            })
+        });
+    }
+		    
+
+    /**
+     * Actualizar por ID status finalizado ADMIN
      *
      * @param {Request} req
      * @param {Response} res
@@ -528,88 +568,5 @@ export class SaleController extends Repository<Sale>  {
 
     }
 
-    /**
-     * Crear Subasta METODO ELIMINADO
-     *
-     * @param {Request} req
-     * @param {Response} res
-     * @memberof SaleController
-     */
-    public async createSale(req: Request, res: Response) {
-
-        let { productId, total } = req.body;
-
-        let usuario: any = req.userToken;
-
-        let userRepo = getRepository(User);
-        let user: User | undefined = await userRepo.findOne({ id: usuario.id });
-        if (!user || user === undefined) {
-
-            return res.status(404).json({
-                ok: false,
-                message: `No se encontró un Usuario para el id: ${usuario.id}`,
-            });
-        }
-
-        let productRepo = getRepository(Product);
-        let product: Product | undefined = await productRepo.findOne({ id: productId });
-        if (!product || product === undefined) {
-
-            return res.status(404).json({
-                ok: false,
-                message: `No se encontró un Producto para el id: ${productId}`,
-            });
-        }
-
-
-
-        let saleRepo = getRepository(Sale);
-
-
-        let newSale = new Sale();
-
-        newSale.status = Status.Disponible;
-        newSale.total = parseFloat(total);
-        newSale.product = product;
-        newSale.user = user;
-
-
-        //Validaciones
-        const errorsSale = await validate(newSale);
-
-        if (errorsSale.length > 0) {
-            return res.status(400).json({
-                ok: false,
-                errors: {
-                    validation: true,
-                    error: errorsSale
-                }
-            })
-        }
-
-        await saleRepo.save(newSale)
-            .then(async (saleCreated: Sale) => {
-
-                if (!saleCreated) {
-                    return res.status(409).json({
-                        ok: false,
-                        message: "No se pudo crear la subasta"
-                    });
-                }
-
-                res.status(201).json({
-                    ok: true,
-                    sale: saleCreated
-                });
-
-            }).catch((err: Error) => {
-
-                return res.status(500).json({
-                    ok: false,
-                    message: "Error al crear la subasta",
-                    error: err.message
-                });
-
-            });
-    }
+    	
 }
