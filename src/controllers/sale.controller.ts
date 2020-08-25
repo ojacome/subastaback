@@ -3,9 +3,10 @@ import { EntityRepository, Repository, getRepository, DeleteResult, Between } fr
 import { Sale, Status } from "../models/sale.model";
 import { User } from "../models/user.model";
 import { Product } from "../models/product.model";
-import { validate } from "class-validator";
+import { validate, isNotEmpty } from "class-validator";
 import { isOferta, enviarCorreo, TipoCorreo } from "../helpers/sale.helper";
 import { Correo } from "../helpers/send_email.helper";
+import { } from 'class-validator'
 
 
 @EntityRepository(Sale)
@@ -31,6 +32,7 @@ export class SaleController extends Repository<Sale>  {
 
 	/**
      * Consultar las subastas en status disponibles
+     * OPCIONAL envio de id de categoria para filtrar
      *
      * @param {Request} req
      * @param {Response} res
@@ -38,32 +40,42 @@ export class SaleController extends Repository<Sale>  {
      */
     public async indexSale(req: Request, res: Response) {
 
-        await getRepository(Sale).find({
-            where: { status: Status.Disponible },
-            relations: ["user", "product"]
-            })
-            .then((sales: Sale[]) => {
+        const categoryId = req.params.categoryId;     
 
-                if (sales.length === 0) {
-                    return res.status(404).json({
-                        ok: false,
-                        message: 'No se encontraron registros'
-                    })
-                } else {
-                    res.status(200).json({
-                        ok: true,
-                        sales
-                    })
-                }
+        const query = await
+        getRepository(Sale)
+        .createQueryBuilder("s")
+        .leftJoinAndSelect("s.product", "product")
+        .leftJoinAndSelect("s.user", "user")
+        .leftJoinAndSelect("product.category", "category")
+        .where("s.status= :status", { status: Status.Disponible});
 
+        
+        
+        if(isNotEmpty(categoryId)){            
+            
+            query.andWhere("category.id = :id", { id: categoryId});        
+        }
+
+
+        
+        query
+        .getMany()
+        .then((sales: Sale[]) => {
+            
+            res.status(200).json({
+                ok: true,
+                sales
             })
-            .catch((err: Error) => {
-                return res.status(500).json({
-                    ok: false,
-                    message: "Error al obtener todas las subastas",
-                    error: err.message
-                })
-            });
+            
+        })
+        .catch((err: Error) => {
+            return res.status(500).json({
+                ok: false,
+                message: "Error al obtener las subastas disponibles",
+                error: err.message
+            })
+        });
     }	
 
     /**

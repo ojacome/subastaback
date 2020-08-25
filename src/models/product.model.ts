@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany, ManyToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany, ManyToOne, OneToOne } from "typeorm";
 import { ImageProduct } from "./image_product.model";
 import { IsEmail, IsEnum, IsDefined, IsNotEmpty, ValidateIf, IsNumber, Min } from "class-validator";
 import { Category } from "./category.model";
+import { Sale } from "./sale.model";
 
 
 
@@ -44,7 +45,8 @@ export class Product {
 
 
 
-
+  @OneToOne(type => Sale, sale => sale.product) // specify inverse side as a second parameter
+  sale: Sale;
 
   @OneToMany(type => ImageProduct, image => image.product)
   images: ImageProduct[];

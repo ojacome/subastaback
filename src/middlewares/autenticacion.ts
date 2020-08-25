@@ -44,7 +44,7 @@ export const verificaToken = (req: Request, res: Response, next: NextFunction) =
     }
     // ahora el payload (la info del usuario que genero el token, usuario logueado ) se agrega al request para que este disponible en cada peticion
     req.userToken = decoded.userToken;
-    console.log(req.userToken)
+    // console.log(req.userToken)
     next(); //continuar con proxima peticion
   });
 

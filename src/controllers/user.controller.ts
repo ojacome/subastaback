@@ -101,7 +101,8 @@ export class UserController extends Repository<User>  {
                 }
 
                 userCreated.password = ":("; //enmascarar el password
-
+                console.log(userCreated);
+                
                 //Crear toquen...   {userToken: usuario} info agregada al payload, sera utilizada en el decoded en la verificacion del token
 				let token = jwt.sign({ userToken: userCreated }, SEED, { expiresIn: 14400 }); //14400 expira en 4h 
 
@@ -167,6 +168,8 @@ export class UserController extends Repository<User>  {
 
 				usuario.password = ":("; //enmascarar el password
 
+                console.log(usuario);
+                
 				//Crear toquen...   {userToken: usuario} info agregada al payload, sera utilizada en el decoded en la verificacion del token
 				let token = jwt.sign({ userToken: usuario }, SEED, { expiresIn: 14400 }); //14400 expira en 4h 
 

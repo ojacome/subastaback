@@ -8,7 +8,7 @@ const router = Router();
     const sales = new SaleController();
     
     //rutas publicas
-    router.get('/', sales.indexSale)    
+    router.get('/category/:categoryId?', sales.indexSale)    
     router.get('/:id', sales.showSale); 
     
 

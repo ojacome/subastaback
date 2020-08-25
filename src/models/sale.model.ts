@@ -50,7 +50,7 @@ export class Sale {
   @ManyToOne(type => User , user => user.sales)
   user: User;
 
-  @OneToOne(type => Product)
-    @JoinColumn()
-    product: Product;
+  @OneToOne(type => Product, product => product.sale)
+  @JoinColumn()
+  product: Product;
 }
