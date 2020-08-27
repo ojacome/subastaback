@@ -22,6 +22,7 @@ const router = Router();
     router.post('/login',  users.loginPost);
     router.post('/forgot-password',  users.forgotPassword);
     router.post('/reset-password/:token',  users.resetPassword);
+    router.post('/contact', users.contact)
 
 
        

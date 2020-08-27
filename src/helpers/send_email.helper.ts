@@ -5,7 +5,7 @@ import { User } from '../models/user.model';
 import { Product } from '../models/product.model';
 import { IsEmail } from 'class-validator';
 import { getRepository } from 'typeorm';
-import { BodyNuevaOferta, BodyClient, BodyAdminPay, BodyFortgotPass } from './body_email.helper';
+import { BodyNuevaOferta, BodyClient, BodyAdminPay, BodyFortgotPass, BodyContact } from './body_email.helper';
 
 const transporter = nodemailer.createTransport({
     service: SERVICE_CORREO,
@@ -95,6 +95,24 @@ export class Correo {
         let body = new BodyFortgotPass(user.fullName, user.token)
         
         let mailOptions = getMailOptions(user.email, `RECUPERAR CONTRASEÑA`, body.html)   
+        
+
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error)
+            }
+            else {
+                console.log('Correo enviado ' + info.response)
+            }
+        })
+    }
+
+    static async Contact(user: any) {
+        
+        let userAdmin: any = await getRepository(User).findOne({ isAdmin: true })
+        
+        let body = new BodyContact(user.name, user.email, user.message)
+        let mailOptions = getMailOptions(userAdmin.email, `MENSAJE SOBRE VOLUNTARIADO DE ${user.name}`, body.html)   
         
 
         transporter.sendMail(mailOptions, function (error, info) {

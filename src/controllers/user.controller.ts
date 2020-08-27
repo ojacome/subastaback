@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { EntityRepository, Repository, getRepository, DeleteResult } from "typeorm";
 import { User } from "../models/user.model";
-import { validate } from "class-validator";
+import { validate, isEmpty, isEmail } from "class-validator";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { SEED, resetPassSEED } from "../global/environment";
@@ -461,7 +461,7 @@ export class UserController extends Repository<User>  {
      * @param {Response} res
      * @memberof UserController
      */
-    public async  resetPassword  (req: Request, res: Response) {               
+    public async  resetPassword (req: Request, res: Response) {               
                         
         let token: any = req.params.token;
 		let password: string = req.body.password;		
@@ -551,6 +551,59 @@ export class UserController extends Repository<User>  {
 
 			})
           });          		
-	}
+    }
     
+    /**
+     * Metodo para enviar correo de contacto
+     *
+     * @param {Request} req
+     * @param {Response} res
+     * @returns
+     * @memberof UserController
+     */
+    public async  contact (req: Request, res: Response) {               
+                                
+		let {name, email, message} = req.body;		
+             
+        
+
+        //validaciones
+        if(isEmpty(name) || isEmpty(email) || isEmpty(message)){
+            return res.status(400).json({
+                ok: false,
+                message: 'Los campos nombre, email y el mensaje son requeridos.',            
+            });    
+        }
+
+        if(!isEmail(email)){
+            return res.status(400).json({
+                ok: false,
+                message: 'Ingrese un correo válido.'      
+            });
+        }
+        
+        try{
+
+            let user = {
+                name,
+                email,
+                message
+            }            
+            
+            enviarCorreo(TipoCorreo.Contact, user)
+            
+            return res.status(200).json({
+                ok: false,
+                message: 'Tu mensaje fue recibido por Fundación Fe y Acción. Tan pronto podamos nos pondremos en contacto. Gracias!',            
+            });
+
+        }catch(e){
+
+            return res.status(500).json({
+                ok: false,
+                message: 'Ha ocurrido un error, inténtalo más tarde.',            
+                error: e
+            });
+        }               		
+	}
 }

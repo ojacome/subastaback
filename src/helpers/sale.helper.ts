@@ -8,7 +8,8 @@ export enum TipoCorreo{
     OfertaNueva     = "n",
     OfertaAceptada  = "a",
     OfertaPagada    = "p",
-    ForgotPassword  = "f"
+    ForgotPassword  = "f",
+    Contact         = "c"
 }
 
 
@@ -58,5 +59,9 @@ export const enviarCorreo = (tipo: TipoCorreo, user?: any, product?: any) => {
         case TipoCorreo.ForgotPassword:
             Correo.ForgotPassword(user)
             break   
+        case TipoCorreo.Contact:
+            Correo.Contact(user)
+            break 
+
     }
 }
