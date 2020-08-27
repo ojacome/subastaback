@@ -260,9 +260,21 @@ export class BodyFortgotPass {
     }
 }
 
-export let body =
-    `
-    <table class="table" style="width: 100%;height: 100%;font-family: Helvetica, Arial, sans-serif;padding: 2% 15%;text-align: justify;opacity: 0.8;">
+export class BodyNuevaOferta {
+    public html: string
+
+    constructor(
+        private nameProduct: string
+    ) {
+
+        this.getHtml()
+    }
+
+    getHtml() {
+
+        this.html =
+        `      
+        <table class="table" style="width: 100%;height: 100%;font-family: Helvetica, Arial, sans-serif;padding: 2% 15%;text-align: justify;opacity: 0.8;">
         <thead>
             <tr>
                 <td class="head" style="background-color: #FEEEEC;padding: 3% 10%;">
@@ -286,10 +298,10 @@ export let body =
                     <br>      
                                   
                     <p>
-                        Se registró una nueva oferta, haz clic en el botón de abajo para que puedas ingresar al sistema y conocer más detalles. 
+                        Se registró una nueva oferta para el producto ${this.nameProduct.toUpperCase()}, haz clic en el botón de abajo para que puedas ingresar al sistema y conocer más detalles. 
                     </p>  
                     
-                    <a href="${CLIENT_SERVERS[0]}/#/dashboard" class="boton_personalizado" style="text-decoration: none;padding: 10px;font-weight: 600;font-size: 16px;color: #ffffff;background-color: #1883ba;border-radius: 6px;">
+                    <a href="${CLIENT_SERVERS[0]}/#/dashboard/reports" class="boton_personalizado" style="text-decoration: none;padding: 10px;font-weight: 600;font-size: 16px;color: #ffffff;background-color: #1883ba;border-radius: 6px;">
                         Ver Oferta
                     </a>
                     
@@ -316,5 +328,7 @@ export let body =
                 </td>
             </tr>
         </tfoot>
-    </table>
-`
+    </table>                    
+        `
+    }
+}

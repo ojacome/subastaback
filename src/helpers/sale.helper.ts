@@ -19,20 +19,20 @@ export const isOferta = (sale: Sale, oferta: number) => {
     if(sale.user){
         if(oferta >= sale.total + 1 ) {
         
-            enviarCorreo(TipoCorreo.OfertaNueva)
+            enviarCorreo(TipoCorreo.OfertaNueva,sale.user, sale.product)
             return true
         }
     }
     else{
         if(oferta == sale.total ){ 
 
-            enviarCorreo(TipoCorreo.OfertaNueva)
+            enviarCorreo(TipoCorreo.OfertaNueva,sale.user, sale.product)
             return true
         }
         
         if(oferta >= sale.total + 1 ) {
             
-            enviarCorreo(TipoCorreo.OfertaNueva)
+            enviarCorreo(TipoCorreo.OfertaNueva,sale.user, sale.product)
             return true
         }
     }
@@ -47,7 +47,7 @@ export const enviarCorreo = (tipo: TipoCorreo, user?: any, product?: any) => {
 
     switch(tipo){
         case TipoCorreo.OfertaNueva:
-            Correo.NuevaOferta();
+            Correo.NuevaOferta(product);
             break;
         case TipoCorreo.OfertaAceptada:
             Correo.OfertaAceptada(user, product)

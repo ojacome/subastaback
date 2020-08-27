@@ -5,7 +5,7 @@ import { User } from '../models/user.model';
 import { Product } from '../models/product.model';
 import { IsEmail } from 'class-validator';
 import { getRepository } from 'typeorm';
-import { body, BodyClient, BodyAdminPay, BodyFortgotPass } from './body_email.helper';
+import { BodyNuevaOferta, BodyClient, BodyAdminPay, BodyFortgotPass } from './body_email.helper';
 
 const transporter = nodemailer.createTransport({
     service: SERVICE_CORREO,
@@ -19,30 +19,34 @@ const transporter = nodemailer.createTransport({
         rejectUnauthorized: false
     },
 });
-let mailOptions = {
-    from: {
-        name: 'Fundación Fé y Acción',
-        address: 'feyaccion@admin.sist.com'
-    },
-    to: 'sfgsfg@asdfadf',
-    subject: 'SUBASTA - FUNDACIÓN FE Y ACCIÓN',
-    text: 'sdfgsdfg',
-    html: 'sfdgsf',
-    attachments: [{
-        filename: 'logo_recortado.png',
-        path: 'D:/universidad/titulacion/subastaback/dist/assets/img/logo_recortado.png',
-        cid: '123logofundacion' //same cid value as in the html img src
-    }]
+
+let getMailOptions = (destinatario: string, asunto: string, html: string ) => {
+
+    return  {
+        from: {
+            name: 'Fundación Fé y Acción',
+            address: 'feyaccion@admin.sist.com'
+        },
+        to: destinatario,
+        subject: asunto,
+        text: '',
+        html: html,
+        attachments: [{
+            filename: 'logo_recortado.png',
+            path: 'D:/universidad/titulacion/subastaback/dist/assets/img/logo_recortado.png',
+            cid: '123logofundacion' //same cid value as in the html img src
+        }]
+    }
 }
 
 export class Correo {
 
-    static async NuevaOferta() {
+    static async NuevaOferta( product: Product ) {
         
+        let body = new BodyNuevaOferta(product.name)
         let userAdmin: any = await getRepository(User).findOne({ isAdmin: true })
-        mailOptions.to = userAdmin.email
-        mailOptions.text = `Hola ${userAdmin.fullName},`
-        mailOptions.html = body
+        
+        let mailOptions = getMailOptions(userAdmin.email, `NUEVA OFERTA AL PRODUCTO ${product.name.toUpperCase()}`, body.html)
 
         transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
@@ -57,10 +61,8 @@ export class Correo {
     static OfertaAceptada(user: User, product: Product) {
                         
         let body = new BodyClient(user.fullName, product.name)
-
-        mailOptions.to = user.email
-        mailOptions.text = `Hola ${user.fullName},`
-        mailOptions.html = body.html
+        let mailOptions = getMailOptions(user.email, `OFERTA ACEPTADA AL PRODUCTO ${product.name.toUpperCase()}`, body.html)
+        
 
         transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
@@ -75,11 +77,8 @@ export class Correo {
     static async OfertaPagada(user: User, product: Product) {
         
         let body = new BodyAdminPay(user.fullName, product.name, user.email)
-
         let userAdmin: any = await getRepository(User).findOne({ isAdmin: true })
-        mailOptions.to = userAdmin.email
-        mailOptions.text = `Hola ${userAdmin.fullName},`
-        mailOptions.html = body.html
+        let mailOptions = getMailOptions(userAdmin.email, `SUBASTA PAGADA DEL PRODUCTO ${product.name.toUpperCase()}`, body.html)        
 
         transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
@@ -95,9 +94,8 @@ export class Correo {
         
         let body = new BodyFortgotPass(user.fullName, user.token)
         
-        mailOptions.to = user.email
-        mailOptions.text = `Hola ${user.fullName},`
-        mailOptions.html = body.html
+        let mailOptions = getMailOptions(user.email, `RECUPERAR CONTRASEÑA`, body.html)   
+        
 
         transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
@@ -109,83 +107,3 @@ export class Correo {
         })
     }
 }
-
-
-
-
-
-
-
-
-
-
-// export const sendCorreoElectronico = async () => {
-
-//     console.log("entra enviar correo")
-//     let userAdmin: any = await getRepository(User).findOne({ isAdmin: true })
-//     mailOptions.to = userAdmin.email
-//     mailOptions.text = `Hola ${userAdmin.fullName},`
-//     mailOptions.html = bodyEmail()
-
-//     transporter.sendMail(mailOptions, function (error, info) {
-//         if (error) {
-//             console.log(error)
-//         }
-//         else {
-//             console.log('Correo enviado ' + info.response)
-//         }
-//     })
-// }
-// //servicio de correo ethereal , mailtrap investigar
-// let EmailController = {
-
-//     sendEmail(req: Request, res: Response){
-
-//         // return res.status(200).json({
-//         //     ok: true,
-//         //     message: 'Correo enviado',
-//         //     detail: 'xd'
-//         // })
-//         let transporter = nodemailer.createTransport({
-//             service: 'gmail',
-//             auth: {
-
-//                 user:'olmedo.bdp@gmail.com',
-//                 pass: 'teamovirgen10'
-//             },
-//             tls: {
-//                 // do not fail on invalid certs
-//                 rejectUnauthorized: false
-//             },
-//         });
-
-//         let mailOptions = {
-//             from: 'admin@fundacion.feyaccion.com',
-//             to: 'olmedo.jacomeb@ug.edu.ec',
-//             subject: 'Fundacion fe',
-//             text: `Hola Olmedo`,            
-//             html: "<h3>Has recibido una oferta en el siguiente producto</h3>"
-//         }
-
-//         transporter.sendMail(mailOptions, function(error, info){
-//             if(error){
-//                 console.log(error)
-//                 res.status(500).json({
-//                     ok: true,
-//                     message: 'error al enviar correo',
-//                     detail: error
-//                 })
-//             }
-//             else{
-//                 console.log('Correo enviado '+ info.response)
-//                 res.status(200).json({
-//                     ok: true,
-//                     message: 'Correo enviado',
-//                     detail: info.response
-//                 })
-//             }
-//         })
-//     }
-// }
-
-// export default EmailController
