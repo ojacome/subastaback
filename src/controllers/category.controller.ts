@@ -24,31 +24,35 @@ export class CategoryController extends Repository<Category>  {
 
         let categoryRepo = getRepository(Category)
 
-        await categoryRepo.find()
-            .then( (categories: Category[]) => {
+        await categoryRepo.find({ 
+            order:  {
+                name: "ASC"
+            }
+        })
+        .then( (categories: Category[]) => {
 
-                if (categories.length === 0) {
-                    return res.status(404).json({
-                        ok: false,
-                        message: 'No se encontraron registros'
-                    })
-                } else {                    
-                     
-
-                    res.status(200).json({
-                        ok: true,
-                        categories
-                    })
-                }
-
-            })
-            .catch((err: Error) => {
-                return res.status(500).json({
+            if (categories.length === 0) {
+                return res.status(404).json({
                     ok: false,
-                    message: "Error al obtener todas las categorías",
-                    error: err.message
+                    message: 'No se encontraron registros'
                 })
-            });
+            } else {                    
+                    
+
+                res.status(200).json({
+                    ok: true,
+                    categories
+                })
+            }
+
+        })
+        .catch((err: Error) => {
+            return res.status(500).json({
+                ok: false,
+                message: "Error al obtener todas las categorías",
+                error: err.message
+            })
+        });
     }
 
 	/**

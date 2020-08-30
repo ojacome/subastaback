@@ -6,7 +6,7 @@ import { Product } from "../models/product.model";
 import { validate, isNotEmpty } from "class-validator";
 import { isOferta, enviarCorreo, TipoCorreo } from "../helpers/sale.helper";
 import { Correo } from "../helpers/send_email.helper";
-import { } from 'class-validator'
+
 
 
 @EntityRepository(Sale)
@@ -67,7 +67,7 @@ export class SaleController extends Repository<Sale>  {
 
 	/**
      * Consultar las subastas en status disponibles
-     * OPCIONAL envio de id de categoria para filtrar
+     * 
      *
      * @param {Request} req
      * @param {Response} res
@@ -76,6 +76,8 @@ export class SaleController extends Repository<Sale>  {
     public async indexSale(req: Request, res: Response) {
 
         const categoryId = req.params.categoryId;     
+        let page = Number(req.query.page) || 1
+        let perPage = 9;
 
         const query = await
         getRepository(Sale)
@@ -83,24 +85,26 @@ export class SaleController extends Repository<Sale>  {
         .leftJoinAndSelect("s.product", "product")
         .leftJoinAndSelect("s.user", "user")
         .leftJoinAndSelect("product.category", "category")
-        .where("s.status= :status", { status: Status.Disponible});
+        .where("s.status= :status", { status: Status.Disponible})
 
-        
-        
-        if(isNotEmpty(categoryId)){            
-            
+                
+        if(isNotEmpty(categoryId) && categoryId !== 'all'){                        
             query.andWhere("category.id = :id", { id: categoryId});        
         }
 
-
+        //paginacion
+        query
+        .skip((perPage * page) - perPage)
+        .take(perPage)
         
         query
-        .getMany()
-        .then((sales: Sale[]) => {
+        .getManyAndCount()
+        .then(([sales, total]) => {
             
             res.status(200).json({
                 ok: true,
-                sales
+                sales,
+                page: Math.ceil( total / perPage )
             })
             
         })
