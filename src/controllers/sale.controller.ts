@@ -317,9 +317,10 @@ export class SaleController extends Repository<Sale>  {
      * @param {Response} res
      * @memberof SaleController
      */
-    public async updatePaySale(req: Request, res: Response) {
-
+    public async updatePaySale(req: Request, res: Response) {        
+        
         let saleId: number = Number(req.params.id);        
+        let salesId: any[] = req.body.map((obj: any) => obj.id);
 
         let usuario: any = req.userToken;
 
@@ -334,82 +335,50 @@ export class SaleController extends Repository<Sale>  {
         }
 
         let saleRepo = getRepository(Sale);
+        let foundSales: Sale[] = []
 
-        //se hace triple validacion para que sea el usuario, subasta y mismo producto a actualizar
-        await saleRepo.findOne({ id: saleId, user: user }, {relations: ["product", "user"]})
-            .then(async (sale: Sale | undefined) => {
+        for(let id of salesId){            
+            
+            let sale: any = await saleRepo.findOne({id: id, user: user}, {relations: ["product", "user"]})
 
-                if (!sale) {
-                    return res.status(404).json({
-                        ok: false,
-                        message: `No se encontró subasta con el id: ${saleId}`
-                    });
-                }
+            if (!sale) {
+                return res.status(404).json({
+                    ok: false,
+                    message: `No se encontró subasta con el id: ${id}`
+                });
+            }
+            
+            
 
-                sale.total = sale.total;
-                sale.status = Status.Pagado;
-                sale.product = sale.product;
-                sale.user = sale.user;
+            sale.total = sale.total;
+            sale.status = Status.Pagado;
+            sale.product = sale.product;
+            sale.user = sale.user;
 
+            console.log(sale);
+            foundSales.push(sale)
 
-                //Validaciones
-                const errorsSale = await validate(sale);
+        }
+        console.log(`actualizando`);
+        
+        await saleRepo.save(foundSales)
+            .then( sales => {
+                
+                //Notificar al administrador para que se ponga en contacto
+                // enviarCorreo(TipoCorreo.OfertaPagada, saleUpdate.user, saleUpdate.product)           
 
-                if (errorsSale.length > 0) {
-                    return res.status(400).json({
-                        ok: false,
-                        errors: {
-                            validation: true,
-                            error: errorsSale
-                        }
-                    })
-                }
-
-                await saleRepo.save(sale)
-                    .then((saleUpdate: Sale) => {
-
-                        if (!saleUpdate) {
-
-                            return res.status(409).json({
-                                ok: false,
-                                message: "No se pudo actualizar la subasta",
-                            });
-
-                        }
-                        
-                        
-                        //Notificar al administrador para que se ponga en contacto
-                        enviarCorreo(TipoCorreo.OfertaPagada, saleUpdate.user, saleUpdate.product)                        
-
-
-                        res.status(201).json({
-                            ok: true,
-                            sale: saleUpdate
-
-                        })
-
-                    }).catch((err: Error) => {
-
-                        return res.status(500).json({
-                            ok: false,
-                            message: "Error al actualizar la subasta",
-                            error: err.message
-                        });
-
-                    });
-
-            }).catch((err: Error) => {
-
+                res.status(201).json({
+                    ok: true,
+                    sales
+                })
+            })
+            .catch((err: Error) => {
                 return res.status(500).json({
                     ok: false,
-                    error: {
-                        message: "Error al buscar subasta a actualizar",
-                        error: err.message
-                    }
+                    message: "Error al actualizar la subasta",
+                    error: err.message
                 });
-
-            });
-
+            })
     }
 
 
