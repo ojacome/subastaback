@@ -42,7 +42,7 @@ export const isOferta = (sale: Sale, oferta: number) => {
     return false
 }
 
-export const enviarCorreo = (tipo: TipoCorreo, user?: any, product?: any) => {         
+export const enviarCorreo = (tipo: TipoCorreo, user?: any, product?: any, sales?: any[]) => {         
     
     if(!ENABLE_CORREO){ return }
 
@@ -54,7 +54,7 @@ export const enviarCorreo = (tipo: TipoCorreo, user?: any, product?: any) => {
             Correo.OfertaAceptada(user, product)
             break
         case TipoCorreo.OfertaPagada:
-            Correo.OfertaPagada(user, product)
+            Correo.OfertaPagada(user, sales)
             break   
         case TipoCorreo.ForgotPassword:
             Correo.ForgotPassword(user)

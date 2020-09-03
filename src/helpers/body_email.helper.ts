@@ -1,4 +1,5 @@
 import { CLIENT_SERVERS } from "../global/environment"
+import { Sale } from "../models/sale.model"
 
 export class BodyClient {
     public html: string
@@ -82,7 +83,7 @@ export class BodyAdminPay {
 
     constructor(
         private nameClient: string,
-        private nameProduct: string,
+        private sales: Sale[] = [],
         private emailClient: string
     ) {
 
@@ -91,88 +92,94 @@ export class BodyAdminPay {
 
     getHtml() {
 
+        let products = ''
+
+        for (let i = 0; i < this.sales.length; i++) {            
+            products += 
+            `<p>
+            Nombre del producto: 
+            <b>
+                ${this.sales[i].product.name.toUpperCase()}     
+            </b> 
+            </p>`
+        }
+        // console.log(products);
+        
         this.html =
             `
-        <table class="table" style="background-color: #FEEEEC;width: 100%;height: 100%;text-align: center;font-family: Helvetica, Arial, sans-serif;opacity: 0.8;">
-            <thead class="head">
-                <tr>
-                    <td style="display: table-cell;vertical-align: inherit;border-bottom: 1px solid #ddd;">
-                        <br>
-                        <h2>
-                            FUNDACIÓN FE Y ACCIÓN
-                        </h2>
-                        <br>
-                    </td>
-                </tr>
-            </thead>
+            <table class="table" style="width: 100%;height: 100%;font-family: Helvetica, Arial, sans-serif;padding: 2% 15%;text-align: justify;opacity: 0.8;">
+                <thead>
+                    <tr>
+                        <td class="head" style="background-color: #FEEEEC;padding: 3% 10%;">
 
-            <tbody>
-                <tr>
-                    <td style="display: table-cell;vertical-align: inherit;border-bottom: 1px solid #ddd;">
-                        <br>
+                            <img class="logo" src="cid:123logofundacion" alt="logo" style="float: left;height: 60px;margin-right: 10px;">
+                            <h2>
+                                FUNDACIÓN FE Y ACCIÓN
+                            </h2>
 
-                        <h4 class="intro" style="font-style: italic;">
-                            Mensaje al administrador,
-                        </h4>
-                        <br>
-                        <p>
-                            Se realizó el pago de una subasta. 
-                            A continuación los detalles para que te pongas en contacto para coordinar la entrega.
-                        </p>
+                        </td>
+                    </tr>
+                </thead>
 
-                        <br>
-                        <p>
-                            Nombre del producto: 
-                            <b>
-                                ${this.nameProduct.toUpperCase()}     
-                            </b> 
-                        </p>
-                        <p>
-                            Nombre del comprador: 
-                            <b>
-                                ${this.nameClient.toUpperCase()}
-                            </b>                        
-                        </p>
-                        <p>
-                            Correo electrónico: ${this.emailClient}
-                        </p>
+                <tbody>
+                    <tr>
+                        <td class="body-email" style="padding: 50px 10%;">
 
-                        <br>
-                        <p> 
-                            También puedes ingresar a                       
-                            <a href="http://localhost:4200/#/dashboard">
-                                éste 
+                            <h4 class="intro" style="font-style: italic;">
+                                Mensaje al Administrador
+                            </h4>                    
+
+                            <p>
+                                Se realizó el pago de ${this.sales.length} subasta/s.
+                                A continuación los detalles para que te pongas en contacto para coordinar la entrega.
+                            </p>
+                            
+                            <p>
+                                Nombre del comprador: 
+                                <b>
+                                    ${this.sales[0].user.fullName.toUpperCase()}
+                                </b>                        
+                            </p>
+                            
+                            <p>
+                                Correo electrónico: ${this.emailClient}
+                            </p>
+
+                            ${products}
+
+                            
+                            <br>
+                            <p> 
+                                También puedes conocer más detalles dando clic en el botón de abajo                        
+                            </p>
+                            <a href="${CLIENT_SERVERS[0]}/#/dashboard/reports" class="boton_personalizado" style="text-decoration: none;padding: 10px;font-weight: 600;font-size: 16px;color: #ffffff;background-color: #1883ba;border-radius: 6px;">
+                                Ver Detalles
                             </a>
-                            enlace para obtener más detalles de la subasta.
-                        </p>
-                        <br>
-                    </td>
-                </tr>
-            </tbody>
+                        </td>
+                    </tr>
+                </tbody>
 
-            <tfoot class="footer" style="background-color: #edd7d4;">
-                <tr>
-                    <td style="display: table-cell;vertical-align: inherit;border-bottom: 1px solid #ddd;">
-                        <br>
-                        <p>
-                            Visita nuestro
-                            <a href="http:localhost:4200">sitio web</a>
-                            y nuestra red social
-                            <a href="https://www.facebook.com/fundacionfeyaccion/">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/1200px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook f logo (2019).svg" height="15px" width="15px">
-                            </a>
-                        </p>
+                <tfoot>
+                    <tr>
+                        <td class="footer" style="background-color: #FEEEEC;padding: 3% 10%;">
+                            <p>
+                                Visita nuestro
+                                <a href="http:localhost:4200">sitio web</a>
+                                y nuestra red social
+                                <a href="https://www.facebook.com/fundacionfeyaccion/">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/1200px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook f logo (2019).svg" height="15px" width="15px">
+                                </a>
+                            </p>
 
-                        <br>
-                        <span class="copyright" style="font-size: 12px;">
-                            Fundación Fé y Acción ©
-                        </span>
-                        <br>
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
-        `
+                            <br>
+                            <span class="copyright" style="font-size: 12px;">
+                                Fundación Fé y Acción ©
+                            </span>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>        
+            `
     }
 }
 

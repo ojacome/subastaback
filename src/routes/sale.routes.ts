@@ -18,7 +18,7 @@ const router = Router();
     router.get('/user/:status', verificaToken, sales.indexSalexStatusUser);     
 
     router.put('/:id', verificaToken, sales.updateSale);
-    router.put('/paypal/:id', verificaToken, sales.updatePaySale);
+    router.put('/paypal/success', verificaToken, sales.updatePaySale);
 
     
 

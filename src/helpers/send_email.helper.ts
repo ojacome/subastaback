@@ -6,6 +6,7 @@ import { Product } from '../models/product.model';
 import { IsEmail } from 'class-validator';
 import { getRepository } from 'typeorm';
 import { BodyNuevaOferta, BodyClient, BodyAdminPay, BodyFortgotPass, BodyContact } from './body_email.helper';
+import { Sale } from '../models/sale.model';
 
 const transporter = nodemailer.createTransport({
     service: SERVICE_CORREO,
@@ -74,11 +75,11 @@ export class Correo {
         })
     }
 
-    static async OfertaPagada(user: User, product: Product) {
+    static async OfertaPagada(user: User, sales: Sale[] | undefined) {
         
-        let body = new BodyAdminPay(user.fullName, product.name, user.email)
+        let body = new BodyAdminPay(user.fullName, sales, user.email)
         let userAdmin: any = await getRepository(User).findOne({ isAdmin: true })
-        let mailOptions = getMailOptions(userAdmin.email, `SUBASTA PAGADA DEL PRODUCTO ${product.name.toUpperCase()}`, body.html)        
+        let mailOptions = getMailOptions(userAdmin.email, `SUBASTA PAGADA DE ${sales?.length} PRODUCTO/S`, body.html)        
 
         transporter.sendMail(mailOptions, function (error, info) {
             if (error) {

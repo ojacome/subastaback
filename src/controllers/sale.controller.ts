@@ -365,7 +365,7 @@ export class SaleController extends Repository<Sale>  {
             .then( sales => {
                 
                 //Notificar al administrador para que se ponga en contacto
-                // enviarCorreo(TipoCorreo.OfertaPagada, saleUpdate.user, saleUpdate.product)           
+                enviarCorreo(TipoCorreo.OfertaPagada, sales[0].user, null, sales )           
 
                 res.status(201).json({
                     ok: true,
