@@ -16,65 +16,67 @@ export class BodyClient {
 
         this.html =
             `
-        <table class="table" style="background-color: #FEEEEC;width: 100%;height: 100%;text-align: center;font-family: Helvetica, Arial, sans-serif;opacity: 0.8;">
-            <thead class="head">
-                <tr>
-                    <td style="display: table-cell;vertical-align: inherit;border-bottom: 1px solid #ddd;">
-                        <br>
-                        <h2>
-                            FUNDACIÓN FE Y ACCIÓN
-                        </h2>
-                        <br>
-                    </td>
-                </tr>
-            </thead>
-
-            <tbody>
-                <tr>
-                    <td style="display: table-cell;vertical-align: inherit;border-bottom: 1px solid #ddd;">
-                        <br>
-
-                        <h4 class="intro" style="font-style: italic;">
-                            Estimado/a ${this.name.toUpperCase()},
-                        </h4>
-                        <br>
-                        <br>
-                        <p>
-                            Tu oferta realizada al producto ${this.nameProduct.toUpperCase()} fue aceptada ingresa a 
-                            
-                            <a href="http://localhost:4200/#/cart">
-                                éste 
+            <table class="table" style="width: 100%;height: 100%;font-family: Helvetica, Arial, sans-serif;padding: 2% 15%;text-align: justify;opacity: 0.8;">
+                <thead>
+                    <tr>
+                        <td class="head" style="background-color: #FEEEEC;padding: 3% 10%;">
+            
+                            <img class="logo" src="cid:123logofundacion" alt="logo" style="float: left;height: 60px;margin-right: 10px;">
+                            <h2>
+                                FUNDACIÓN FE Y ACCIÓN
+                            </h2>
+            
+                        </td>
+                    </tr>
+                </thead>
+            
+                <tbody>
+                    <tr>
+                        <td class="body-email" style="padding: 50px 10%;">
+            
+                            <h4 class="intro" style="font-style: italic;">
+                                Estimado/a ${this.name.toUpperCase()},
+                            </h4>                    
+                            <p>
+                                Tu oferta realizada al producto ${this.nameProduct.toUpperCase()} fue aceptada da clic en el botón de abajo para que puedas pagar el valor del mismo
+                            </p>
+                            <a href="${CLIENT_SERVERS[0]}/#/cart" class="boton_personalizado" style="text-decoration: none;padding: 10px;font-weight: 600;font-size: 16px;color: #ffffff;background-color: #1883ba;border-radius: 6px;">
+                                Ver Detalles
                             </a>
-                            enlace para cancelar el valor del mismo
-                        </p>
-                        <br>
-                    </td>
-                </tr>
-            </tbody>
-
-            <tfoot class="footer" style="background-color: #edd7d4;">
-                <tr>
-                    <td style="display: table-cell;vertical-align: inherit;border-bottom: 1px solid #ddd;">
-                        <br>
-                        <p>
-                            Visita nuestro
-                            <a href="http:localhost:4200">sitio web</a>
-                            y nuestra red social
-                            <a href="https://www.facebook.com/fundacionfeyaccion/">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/1200px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook f logo (2019).svg" height="15px" width="15px">
-                            </a>
-                        </p>
-
-                        <br>
-                        <span class="copyright" style="font-size: 12px;">
-                            Fundación Fé y Acción ©
-                        </span>
-                        <br>
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
-        `
+            
+                            <br>
+                            <br>
+                            <p>
+                                Si tienes problemas para abrir el enlace copia y pega ésta url 
+                            </p>
+                            <p>
+                                ${CLIENT_SERVERS[0]}/#/cart
+                            </p>
+                        </td>
+                    </tr>
+                </tbody>
+            
+                <tfoot>
+                    <tr>
+                        <td class="footer" style="background-color: #FEEEEC;padding: 3% 10%;">
+                            <p>
+                                Visita nuestro
+                                <a href="${CLIENT_SERVERS[0]}">sitio web</a>
+                                y nuestra red social
+                                <a href="https://www.facebook.com/fundacionfeyaccion/">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/1200px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook f logo (2019).svg" height="15px" width="15px">
+                                </a>
+                            </p>
+            
+                            <br>
+                            <span class="copyright" style="font-size: 12px;">
+                                Fundación Fé y Acción ©
+                            </span>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table> 
+            `
     }
 }
 
