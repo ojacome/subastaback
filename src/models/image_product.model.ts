@@ -9,7 +9,7 @@ export class ImageProduct {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ length: 150 })
   filename: string;    
 
 

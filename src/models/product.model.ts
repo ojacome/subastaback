@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany, ManyToOne, OneToOne } from "typeorm";
 import { ImageProduct } from "./image_product.model";
-import { IsEmail, IsEnum, IsDefined, IsNotEmpty, ValidateIf, IsNumber, Min } from "class-validator";
+import { IsEmail, IsEnum, IsDefined, IsNotEmpty, ValidateIf, IsNumber, Min, Length } from "class-validator";
 import { Category } from "./category.model";
 import { Sale } from "./sale.model";
 
@@ -13,12 +13,14 @@ export class Product {
   id: number;
 
 
-  @Column()  
+  @Column({ length: 150})  
   @IsNotEmpty({ message: 'El nombre no debe estar vacío' })
+  @Length(3, 150)
   name: string;
 
   @Column()
   @IsNotEmpty({ message: 'La descripcion no debe estar vacío' })
+  @Length(3, 400)
   description: string;
 
   @Column({type: 'double'})

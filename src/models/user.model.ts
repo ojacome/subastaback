@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany } from "typeorm";
 import { Sale } from "./sale.model";
-import { IsDefined, IsNotEmpty, IsEmail, IsInt, IsNumberString, ValidateIf, MinLength, Matches } from "class-validator";
+import { IsDefined, IsNotEmpty, IsEmail, IsInt, IsNumberString, ValidateIf, MinLength, Matches, Length } from "class-validator";
 import { UniqueName } from "../custom_validations/UniqueName";
 
 
@@ -12,26 +12,46 @@ export class User {
 
 
 
-  @Column({unique: true})
+  @Column({
+    unique: true,
+    length: 30,
+  })
   @IsNotEmpty({ message: 'El email no debe estar vacío' })
   @IsEmail(undefined,{message:'Debe escribir un correo válido'})
   @ValidateIf( o => !o.id)
   @UniqueName(User)
   email: string;
   
-  @Column({select: false})
+  @Column({
+    select: false,
+    length: 100
+  })
   @IsNotEmpty({ message: 'La contraseña no debe estar vacío' })
   @Matches(/(?=.*[0-9])(?=.*[a-zA-Z])(?=\S+$).{8,}/,{ message: 'Escriba mínimo 8 caracteres, con al menos letras y números.'})
   password: string;
   
-  @Column()
+  @Column({ length: 150})
   @IsNotEmpty({ message: 'El nombre y apellido no debe estar vacío' })
+  @Length(2, 150)
   fullName: string;
 
-  @Column({nullable: true})
+  @Column({
+    nullable: true,
+    length: 200
+  })
+  @ValidateIf((o) => {
+    if(o.address === "" || o.address === null || o.address === undefined){
+      return false;
+    }
+    return true;
+  })
+  @Length(3, 200)
   address: string;
 
-  @Column({nullable: true})
+  @Column({
+    nullable: true,
+    length: 20
+  })
   @ValidateIf((o) => {
     if(o.phone === "" || o.phone === null || o.phone === undefined){
       return false;

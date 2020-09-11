@@ -264,9 +264,10 @@ export class CategoryController extends Repository<Category>  {
                         ok: false,
                         message: `No se encontró categoría con el id: ${categoryId}`
                     });
-                }                
+                }                          
+                      
             
-                if (!categoryDelete.products) {
+                if (categoryDelete.products.length == 0) {
                 
                     await categoryRepo.softDelete({ id: categoryId })
                         .then(async (result: DeleteResult) => {
