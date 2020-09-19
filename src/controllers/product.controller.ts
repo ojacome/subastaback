@@ -7,6 +7,7 @@ import fs from "fs";
 import { Sale, Status } from "../models/sale.model";
 import { validate } from 'class-validator';
 import { Category } from "../models/category.model";
+import { obtenerFechaLimite } from "../helpers/time/time.helper";
 
 
 @EntityRepository(Product)
@@ -58,7 +59,7 @@ export class ProductController extends Repository<Product>  {
      */
     public async createProduct(req: Request, res: Response) {
 
-        let { name, description, price, categoryId } = req.body;
+        let { name, description, price, deadline, categoryId } = req.body;
 
 
 
@@ -82,6 +83,21 @@ export class ProductController extends Repository<Product>  {
                 message: `No se encontró un categoría para el id: ${categoryId}`,
             });
         }
+        
+        //validaciones para fecha limite
+        const limite = obtenerFechaLimite(deadline)
+        if(limite === '1'){
+            return res.status(404).json({
+                ok: false,
+                message: `La fecha límite es incorrecta, la subasta no puede durar menos a 7 días`,
+            });
+        }
+        if(limite === '2'){
+            return res.status(404).json({
+                ok: false,
+                message: `La fecha límite es incorrecta, la subasta no puede durar más de 30 días`,
+            });
+        }
 
         let productRepo = getRepository(Product);
         let newProduct = new Product();
@@ -89,7 +105,7 @@ export class ProductController extends Repository<Product>  {
         newProduct.name = name;
         newProduct.description = description;
         newProduct.price = parseFloat(price);
-        newProduct.category = category
+        newProduct.category = category        
 
 
         //Validaciones de clase
@@ -132,6 +148,7 @@ export class ProductController extends Repository<Product>  {
                 sale.total = parseFloat(price);
                 sale.status = Status.Disponible;
                 sale.product = productCreated;
+                sale.deadline = new Date(limite);
 
                 //Validaciones
                 const errorsSale = await validate(sale);

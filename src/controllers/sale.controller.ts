@@ -5,7 +5,7 @@ import { User } from "../models/user.model";
 import { Product } from "../models/product.model";
 import { validate, isNotEmpty } from "class-validator";
 import { isOferta, enviarCorreo, TipoCorreo } from "../helpers/sale.helper";
-import { Correo } from "../helpers/send_email.helper";
+import { Correo } from "../helpers/email/send_email.helper";
 
 
 

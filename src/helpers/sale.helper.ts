@@ -1,5 +1,5 @@
 import { Sale } from "../models/sale.model"
-import { Correo } from "./send_email.helper"
+import { Correo } from "./email/send_email.helper"
 import { ENABLE_CORREO } from "../global/environment"
 import { User } from "../models/user.model"
 import { Product } from "../models/product.model"

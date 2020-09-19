@@ -2,14 +2,20 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 import { User } from "./user.model";
 import { Product } from "./product.model";
 import { IsNumber, IsNotEmpty, min, Min, IsEnum } from "class-validator";
+import { sumarDias } from "../helpers/time/time.helper";
 
 export enum Status {        
     Disponible = 'd',
     Finalizado = 'f',
-    Pagado = 'p'
+    Pagado = 'p',
+    Rezagado = 'r'
   }
 
-
+const limite = () => {
+  let currentDate = new Date();
+  return sumarDias(currentDate, 30);
+}
+const current = new Date()
 @Entity()
 export class Sale {
 
@@ -33,7 +39,9 @@ export class Sale {
   @Min(1,{message: 'La mínima cantidad es de 1.'})
   total: number
 
-
+  @Column({ type: 'date' })
+  @IsNotEmpty({ message: 'Debe escribir una fecha máxima de finalización.'})
+  deadline: Date
 
   @CreateDateColumn({ type: "datetime"})
   createdAt: Date;

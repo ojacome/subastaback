@@ -1,5 +1,5 @@
-import { CLIENT_SERVERS } from "../global/environment"
-import { Sale } from "../models/sale.model"
+import { CLIENT_SERVERS } from "../../global/environment"
+import { Sale } from "../../models/sale.model"
 
 export class BodyClient {
     public html: string

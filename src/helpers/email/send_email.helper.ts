@@ -1,12 +1,12 @@
 import nodemailer from 'nodemailer';
 import { Request, Response } from 'express';
-import { SERVICE_CORREO, USER_CORREO, PASS_CORREO } from '../global/environment';
-import { User } from '../models/user.model';
-import { Product } from '../models/product.model';
+import { SERVICE_CORREO, USER_CORREO, PASS_CORREO } from '../../global/environment';
+import { User } from '../../models/user.model';
+import { Product } from '../../models/product.model';
 import { IsEmail } from 'class-validator';
 import { getRepository } from 'typeorm';
 import { BodyNuevaOferta, BodyClient, BodyAdminPay, BodyFortgotPass, BodyContact, BodyEmailVerification } from './body_email.helper';
-import { Sale } from '../models/sale.model';
+import { Sale } from '../../models/sale.model';
 
 const transporter = nodemailer.createTransport({
     service: SERVICE_CORREO,
