@@ -18,7 +18,7 @@ export class Product {
   @Length(3, 150)
   name: string;
 
-  @Column()
+  @Column({ length: 400})
   @IsNotEmpty({ message: 'La descripcion no debe estar vacío' })
   @Length(3, 400)
   description: string;

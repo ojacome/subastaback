@@ -506,8 +506,13 @@ export class SaleController extends Repository<Sale>  {
                         }
 
                         
-                        //Enviar correo al cliente para pagar    
-                        enviarCorreo(TipoCorreo.OfertaAceptada, sale.user, sale.product)                    
+                        if(saleUpdate.status == Status.Finalizado){
+                            // console.log('entra');
+
+                            //Enviar correo al cliente para pagar    
+                            enviarCorreo(TipoCorreo.OfertaAceptada, sale.user, sale.product)                    
+                        }
+                        
                         
 
 

@@ -5,11 +5,12 @@ import { User } from "../models/user.model"
 import { Product } from "../models/product.model"
 
 export enum TipoCorreo{
-    OfertaNueva     = "n",
-    OfertaAceptada  = "a",
-    OfertaPagada    = "p",
-    ForgotPassword  = "f",
-    Contact         = "c"
+    OfertaNueva         = "n",
+    OfertaAceptada      = "a",
+    OfertaPagada        = "p",
+    ForgotPassword      = "f",
+    Contact             = "c",
+    EmailVerification   = "e"
 }
 
 
@@ -62,6 +63,8 @@ export const enviarCorreo = (tipo: TipoCorreo, user?: any, product?: any, sales?
         case TipoCorreo.Contact:
             Correo.Contact(user)
             break 
-
+        case TipoCorreo.EmailVerification:
+            Correo.EmailVerification( user, product )
+            break 
     }
 }

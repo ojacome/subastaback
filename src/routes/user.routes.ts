@@ -9,6 +9,7 @@ const router = Router();
     
     // rutas admin
     router.get('/', [verificaToken, verificaSuperAdmin], users.indexUser)    
+    router.get('/email-verification/:token', users.accountActivation)   
     // router.delete('/:id', users.deleteUser);
 
 

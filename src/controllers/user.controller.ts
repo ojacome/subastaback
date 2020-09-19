@@ -4,7 +4,7 @@ import { User } from "../models/user.model";
 import { validate, isEmpty, isEmail } from "class-validator";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { SEED, resetPassSEED } from "../global/environment";
+import { SEED, resetPassSEED, emailVerificationSEED } from "../global/environment";
 import { send } from "process";
 import { enviarCorreo, TipoCorreo } from "../helpers/sale.helper";
 
@@ -49,7 +49,7 @@ export class UserController extends Repository<User>  {
     }
 
 	/**
-     * Crear Usuario y envio de token
+     * Crear Usuario y envio de token al email
      *
      * @param {Request} req
      * @param {Response} res
@@ -57,25 +57,17 @@ export class UserController extends Repository<User>  {
      */
     public async createUser(req: Request, res: Response) {
 
-        let { email, password, fullName, phone, address } = req.body;
-        
-        let userRepo = getRepository(User);
-
+        let { email, password, fullName } = req.body;                
         
         let newUser = new User();
-
         newUser.email = email;
         newUser.password = password;
         newUser.fullName = fullName;
-        newUser.phone = phone;
-        newUser.address = address;
         // newUser.isAdmin = true;
         
         
-
         //Validaciones
         const errorsUser = await validate(newUser);
-
         if (errorsUser.length > 0) {
             return res.status(400).json({
                 ok: false,
@@ -86,41 +78,96 @@ export class UserController extends Repository<User>  {
             })
         }
 
-        //encriptar constraseña
-        newUser.password = bcrypt.hashSync(password, 10);
+        //Crear token...
+        let emailToken = jwt.sign({ newUser }, emailVerificationSEED, { expiresIn: '2h' }); 
         
+        enviarCorreo(TipoCorreo.EmailVerification,newUser,emailToken);                        
 
-        await userRepo.save(newUser)
-            .then(async (userCreated: User) => {
+        return res.status(200).json({
+            ok: true,
+            message: 'Te enviamos un enlace a tu correo para que puedas activar tu cuenta.',
+            emailToken
+        })
+    }
 
-                if (!userCreated) {
-                    return res.status(409).json({
-                            ok: false,
-                            message: "No se pudo crear el usuario"
-                        });
-                }
+    /** 
+     * Metodo para activar la cuenta   
+     *
+     * @param {Request} req se espera token por parametro
+     * @param {Response} res
+     * @memberof UserController
+     */
+    public async accountActivation(req: Request, res: Response) {
+        
+        let token: any = req.params.token;
+       
+        //verifico si existe token
+        jwt.verify(token, emailVerificationSEED, async (err: any, decoded: any) => {
+            if (err) {
+              return res.status(404).json({
+                ok: false,
+                message: 'Código incorrecto o ha caducado.',
+                error: err
+              });
+            }
 
-                userCreated.password = ":("; //enmascarar el password
-                console.log(userCreated);
-                
-                //Crear toquen...   {userToken: usuario} info agregada al payload, sera utilizada en el decoded en la verificacion del token
-				let token = jwt.sign({ userToken: userCreated }, SEED, { expiresIn: 14400 }); //14400 expira en 4h 
+            // ahora obtengo validados del token
+            let { newUser } = decoded
 
-                res.status(201).json({
-                        ok: true,
-                        // user: userCreated,
+            let user = new User();
+            user.fullName       = newUser.fullName;
+            user.email          = newUser.email;       
+            user.password       = newUser.password   
+            
+            //Validaciones
+            const errorsUser = await validate(user);
+            if (errorsUser.length > 0) {
+                return res.status(400).json({
+                    ok: false,
+                    errors: {
+                        validation: true,
+                        error: errorsUser
+                    }
+                })
+            }
+
+            //encripto la contraseña
+            user.password       = bcrypt.hashSync(newUser.password, 10);
+                        
+            
+            let userRepository = getRepository(User);                            
+            await userRepository.save(user)
+                .then((userCreated: User) => {
+
+                    if (!userCreated) {
+
+                        return res.status(409).json({
+                                ok: false,
+                                message: "No se pudo crear la cuenta",
+                            });
+
+                    }
+
+                    userCreated.password = ":("
+                    console.log(userCreated);
+                    
+                    //Crear toquen...   {userToken: usuario} info agregada al payload, sera utilizada en el decoded en la verificacion del token
+                    let token = jwt.sign({ userToken: userCreated }, SEED, { expiresIn: 14400 }); //14400 expira en 4h 
+
+                    res.status(200).json({
+                        ok: true,                        
                         token
-                    });
+                    })
 
-            }).catch((err: Error) => {
+                }).catch((err: Error) => {
 
-                return res.status(500).json({
+                    return res.status(500).json({
                         ok: false,
-                        message: "Error al crear el usuario",
+                        message: "Error al guar usuario",
                         error: err.message
                     });
-
-            });
+                });
+        }); 
     }
 
    /**
