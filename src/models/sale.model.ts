@@ -39,7 +39,7 @@ export class Sale {
   @Min(1,{message: 'La mínima cantidad es de 1.'})
   total: number
 
-  @Column({ type: 'date' })
+  @Column({ type: 'datetime' })
   @IsNotEmpty({ message: 'Debe escribir una fecha máxima de finalización.'})
   deadline: Date
 
