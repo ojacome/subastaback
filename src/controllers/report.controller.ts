@@ -66,30 +66,34 @@ export class ReportController {
      */
     public async getData(startDate: Date, endDate: Date, status: any, withUser: any){
 		console.log(startDate, endDate);
-		
-		
+		      
         let query =  await 
-        getRepository(Sale)
-        .createQueryBuilder("sale")        
-        .innerJoin("sale.user","user")
-        .innerJoin("sale.product","product")
-        .select("sale.id","id")
-        .addSelect("sale.total","total")        
-        .addSelect("sale.updatedAt","fecha_pago")   
-        .addSelect("user.fullName","user_name")
-        .addSelect("user.email","email")
-        .addSelect("user.address","address")
-        .addSelect("user.phone","phone")
-        .addSelect("product.name","product_name")
-        .addSelect("product.description","description")
-        .where("sale.status = :status", { status: status})
-                
+            getRepository(Sale)
+            .createQueryBuilder("sale")        
+            .leftJoin("sale.user","user")
+            .leftJoin("sale.product","product")
+            .select("sale.id","id")
+            .addSelect("sale.total","total")        
+            .addSelect("sale.deadline","deadline")
+            .addSelect("sale.updatedAt","fecha_pago")   
+            .addSelect("user.fullName","user_name")
+            .addSelect("user.email","email")
+            .addSelect("user.address","address")
+            .addSelect("user.phone","phone")
+            .addSelect("product.name","product_name")
+            .addSelect("product.description","description")
+            .where("sale.status = :status", { status: status})
 
         if(status === Status.Pagado){
             query.andWhere("sale.updatedAt BETWEEN :start AND :end", {start: startDate, end: endDate})  
-        }
+        }       
 
-		return query.getRawMany();
+        let sales = await query.getRawMany();
+
+        if(withUser==='s'){ sales = sales.filter( sales => sales.user_name) }
+        else { sales = sales.filter( sales => !sales.user_name) }
+        
+        return sales
     }
 
     /**
@@ -112,7 +116,7 @@ export class ReportController {
                     headers= [
                         { header: 'Código',                 key: 'id'},
                         { header: 'Ofertante',              key: 'user_name'} ,
-                        { header: 'Fecha de oferta',        key: 'fecha_pago'} ,
+                        { header: 'Fecha de finalización',  key: 'deadline'} ,
                         { header: 'Valor',                  key: 'total'} ,
                         { header: 'Producto',               key: 'product_name'} ,
                         { header: 'Descripción',            key: 'description'} ,
@@ -125,7 +129,8 @@ export class ReportController {
                         { header: 'Código',                 key: 'id'},
                         { header: 'Producto',               key: 'product_name'} ,
                         { header: 'Descripción',            key: 'description'} ,
-                        { header: 'Valor mínimo',                  key: 'total'} ,
+                        { header: 'Valor mínimo',           key: 'total'} ,
+                        { header: 'Fecha de finalización',  key: 'deadline'} ,
                     ]
                     sheet_name = "Subastas Sin Oferta"
                 }
