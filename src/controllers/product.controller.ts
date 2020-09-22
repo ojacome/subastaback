@@ -8,6 +8,7 @@ import { Sale, Status } from "../models/sale.model";
 import { validate } from 'class-validator';
 import { Category } from "../models/category.model";
 import { obtenerFechaLimite } from "../helpers/time/time.helper";
+import { programarFinalizacionSubasta } from "../helpers/schedule/schedule.helper";
 
 
 @EntityRepository(Product)
@@ -160,8 +161,10 @@ export class ProductController extends Repository<Product>  {
                             error: errorsSale
                         }
                     })
-                }
+                }                
 
+                
+                
                 await getRepository(Sale).save(sale)
                     .then(async (saleCreated: Sale) => {
 
@@ -171,6 +174,9 @@ export class ProductController extends Repository<Product>  {
                                 message: "No se pudo crear la subasta"
                             });
                         }
+
+                        // const date = new Date(2020, 8, 21, 22, 47, 0);
+                        programarFinalizacionSubasta(sale.deadline,saleCreated.id);
 
                         res.status(201).json({
                             ok: true,
