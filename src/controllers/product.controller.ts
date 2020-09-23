@@ -90,13 +90,13 @@ export class ProductController extends Repository<Product>  {
         if(limite === '1'){
             return res.status(404).json({
                 ok: false,
-                message: `La fecha límite es incorrecta, la subasta no puede durar menos a 7 días`,
+                message: `La fecha límite es incorrecta, la subasta no puede durar menos a 3 días`,
             });
         }
         if(limite === '2'){
             return res.status(404).json({
                 ok: false,
-                message: `La fecha límite es incorrecta, la subasta no puede durar más de 30 días`,
+                message: `La fecha límite es incorrecta, la subasta no puede durar más de 14 días`,
             });
         }
 
