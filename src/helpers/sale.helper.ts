@@ -10,7 +10,8 @@ export enum TipoCorreo{
     OfertaPagada        = "p",
     ForgotPassword      = "f",
     Contact             = "c",
-    EmailVerification   = "e"
+    EmailVerification   = "e",
+    SubastaRezagada     = "r"
 }
 
 
@@ -65,6 +66,9 @@ export const enviarCorreo = (tipo: TipoCorreo, user?: any, product?: any, sales?
             break 
         case TipoCorreo.EmailVerification:
             Correo.EmailVerification( user, product )
+            break 
+        case TipoCorreo.SubastaRezagada:
+            Correo.SubastaRezagada( product )
             break 
     }
 }

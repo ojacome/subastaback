@@ -5,7 +5,7 @@ import { User } from '../../models/user.model';
 import { Product } from '../../models/product.model';
 import { IsEmail } from 'class-validator';
 import { getRepository } from 'typeorm';
-import { BodyNuevaOferta, BodyClient, BodyAdminPay, BodyFortgotPass, BodyContact, BodyEmailVerification } from './body_email.helper';
+import { BodyNuevaOferta, BodyClient, BodyAdminPay, BodyFortgotPass, BodyContact, BodyEmailVerification, BodyRezagada } from './body_email.helper';
 import { Sale } from '../../models/sale.model';
 
 const transporter = nodemailer.createTransport({
@@ -131,6 +131,24 @@ export class Correo {
         
         let body = new BodyEmailVerification(user.fullName, token);
         let mailOptions = getMailOptions(user.email, `ACTIVACIÓN DE CUENTA`, body.html)   
+        
+
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error)
+            }
+            else {
+                console.log('Correo enviado ' + info.response)
+            }
+        })
+    }
+
+    static async SubastaRezagada(product: any) {
+               
+        let userAdmin: any = await getRepository(User).findOne({ isAdmin: true })
+
+        let body = new BodyRezagada(product.name);
+        let mailOptions = getMailOptions(userAdmin.email, `SUBASTA REZAGADA DEL PRODUCTO ${product.name.toUpperCase()}`, body.html)   
         
 
         transporter.sendMail(mailOptions, function (error, info) {
