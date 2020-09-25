@@ -252,6 +252,7 @@ export class SaleController extends Repository<Sale>  {
 
                 sale.total = parseFloat(total);
                 sale.user = user;
+                sale.updatedByUser = usuario.id
                 
 
                 //Validaciones
@@ -282,7 +283,7 @@ export class SaleController extends Repository<Sale>  {
                         res.status(201).json({
                             ok: true,
                             sale: saleUpdate,
-                            message: 'Tu oferta fué ingresada, espera el correo de confirmación o puedes mejorar la oferta :)'
+                            message: 'Tu oferta fué ingresada, ahora puedes visualizar éste producto desde la opción "mis subastas" en la categorias "mis ofertas"'
 
                         })
 
@@ -354,6 +355,7 @@ export class SaleController extends Repository<Sale>  {
             sale.status = Status.Pagado;
             sale.product = sale.product;
             sale.user = sale.user;
+            sale.updatedByUser = usuario.id
 
             console.log(sale);
             foundSales.push(sale)
@@ -458,7 +460,7 @@ export class SaleController extends Repository<Sale>  {
 
         let saleId: number = Number(req.params.id);                
         let { status } = req.body
-        
+        let usuario: any = req.userToken;
         let saleRepo = getRepository(Sale);
 
         //se hace triple validacion para que sea el usuario, subasta y mismo producto a actualizar
@@ -476,6 +478,7 @@ export class SaleController extends Repository<Sale>  {
                 sale.status = status;
                 sale.product = sale.product;
                 sale.user = sale.user;
+                sale.updatedByUser = usuario.id;
 
                 
                 //Validaciones

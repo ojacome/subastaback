@@ -66,13 +66,13 @@ export class CategoryController extends Repository<Category>  {
 
         let { name, description } = req.body;
 
-
+        let usuario: any = req.userToken;
         let categoryRepo = getRepository(Category);
         let newCategory = new Category();
 
         newCategory.name = name;
         newCategory.description = description;        
-
+        newCategory.updatedByUser = usuario.id
 
         //Validaciones
         const errorsCategory = await validate(newCategory);
@@ -170,7 +170,7 @@ export class CategoryController extends Repository<Category>  {
         let categoryId: number = Number(req.params.id);
         let { name, description } = req.body;
 
-
+        let usuario: any = req.userToken;
         let categoryRepo = getRepository(Category);
 
         await categoryRepo.findOne({ id: categoryId })
@@ -185,6 +185,7 @@ export class CategoryController extends Repository<Category>  {
 
                 category.name = name;
                 category.description = description;
+                category.updatedByUser = usuario.id
 
                 // Validaciones
                 const errorsCategory = await validate(category);

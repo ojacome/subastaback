@@ -63,7 +63,7 @@ export class ProductController extends Repository<Product>  {
         let { name, description, price, deadline, categoryId } = req.body;
 
 
-
+        let usuario: any = req.userToken;
         let imageRepos = getRepository(ImageProduct);
         let imgFiles: any = req.files;
         // console.log(imgFiles.length)
@@ -106,7 +106,8 @@ export class ProductController extends Repository<Product>  {
         newProduct.name = name;
         newProduct.description = description;
         newProduct.price = parseFloat(price);
-        newProduct.category = category        
+        newProduct.category = category  
+        newProduct.updatedByUser = usuario.id      
 
 
         //Validaciones de clase
@@ -150,6 +151,7 @@ export class ProductController extends Repository<Product>  {
                 sale.status = Status.Disponible;
                 sale.product = productCreated;
                 sale.deadline = new Date(limite);
+                sale.updatedByUser = usuario.id
 
                 //Validaciones
                 const errorsSale = await validate(sale);
@@ -256,7 +258,7 @@ export class ProductController extends Repository<Product>  {
 
         let productId: number = Number(req.params.id);
         let { name, description, price, categoryId } = req.body;
-
+        let usuario: any = req.userToken;
 
         //validar que exista categoria
         let category: any = await getRepository(Category).findOne({ id: categoryId });
@@ -296,7 +298,8 @@ export class ProductController extends Repository<Product>  {
                 product.name = name;
                 product.description = description;
                 product.price = parseFloat(price)
-                product.category = category
+                product.category = category;
+                product.updatedByUser = usuario.id;
 
                 // Validaciones
                 const errorsSale = await validate(product);

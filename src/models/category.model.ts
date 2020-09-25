@@ -31,7 +31,8 @@ export class Category {
   @Column({ default: true })
   isActive: boolean
 
-
+  @Column({select: false})
+  updatedByUser: number  
 
 
 

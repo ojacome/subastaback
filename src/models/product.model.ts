@@ -32,7 +32,8 @@ export class Product {
   @Column({ default: true })
   isActive: boolean
 
-
+  @Column({select: false})
+  updatedByUser: number 
 
 
 

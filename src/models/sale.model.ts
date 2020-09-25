@@ -43,6 +43,12 @@ export class Sale {
   @IsNotEmpty({ message: 'Debe escribir una fecha máxima de finalización.'})
   deadline: Date
 
+  @Column({select: false})
+  updatedByUser: number 
+
+
+
+  
   @CreateDateColumn({ type: "datetime"})
   createdAt: Date;
 
