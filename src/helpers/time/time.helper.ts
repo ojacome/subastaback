@@ -20,6 +20,6 @@ export const obtenerFechaLimite = (fecha: string) => {
     }
     else{
         f = sumarDias(new Date(), 7);        
-        return `${f.getFullYear()}-${f.getMonth()+1}-${f.getDate()}`; //por defecto 30 dias limite
+        return `${f.getFullYear()}-${f.getMonth()+1}-${f.getDate()}`; //por defecto 7 dias limite
     }
 }

@@ -6,6 +6,7 @@ import { Product } from "../models/product.model";
 import { validate, isNotEmpty } from "class-validator";
 import { isOferta, enviarCorreo, TipoCorreo } from "../helpers/sale.helper";
 import { Correo } from "../helpers/email/send_email.helper";
+import { obtenerFechaLimite } from "../helpers/time/time.helper";
 
 
 
@@ -450,7 +451,8 @@ export class SaleController extends Repository<Sale>  {
 		    
 
     /**
-     * Actualizar por ID status finalizado ADMIN
+     * METODO ADMIN
+     * Actualizar por ID y por status
      *
      * @param {Request} req
      * @param {Response} res
@@ -459,10 +461,11 @@ export class SaleController extends Repository<Sale>  {
     public async updateFinalizadoSale(req: Request, res: Response) {
 
         let saleId: number = Number(req.params.id);                
-        let { status } = req.body
+        let { status, deadline } = req.body
         let usuario: any = req.userToken;
         let saleRepo = getRepository(Sale);
-
+        
+        
         //se hace triple validacion para que sea el usuario, subasta y mismo producto a actualizar
         await saleRepo.findOne({ id: saleId }, {relations: ["product", "user"]})
             .then(async (sale: Sale | undefined) => {
@@ -473,6 +476,25 @@ export class SaleController extends Repository<Sale>  {
                         message: `No se encontró subasta con el id: ${saleId}`
                     });
                 }                
+
+                //si llega deadline es decir que va a reactivar la subasta
+                if(deadline !== '' && deadline !== null && deadline !== undefined){
+                    const limite = obtenerFechaLimite(deadline);
+                    if(limite === '1'){
+                        return res.status(404).json({
+                            ok: false,
+                            message: `La fecha límite es incorrecta, la subasta no puede durar menos a 3 días`,
+                        });
+                    }
+                    if(limite === '2'){
+                        return res.status(404).json({
+                            ok: false,
+                            message: `La fecha límite es incorrecta, la subasta no puede durar más de 14 días`,
+                        });
+                    }
+
+                    sale.deadline = new Date(limite)
+                }
 
                 sale.total = sale.total;
                 sale.status = status;
@@ -495,7 +517,8 @@ export class SaleController extends Repository<Sale>  {
                 }                                
                 
 
-
+                console.log(sale);
+                
                 await saleRepo.save(sale)
                     .then((saleUpdate: Sale) => {
 
@@ -509,20 +532,15 @@ export class SaleController extends Repository<Sale>  {
                         }
 
                         
-                        if(saleUpdate.status == Status.Finalizado){
-                            // console.log('entra');
-
-                            //Enviar correo al cliente para pagar    
+                        //Enviar correo al cliente para pagar    
+                        if(saleUpdate.status == Status.Finalizado){                            
                             enviarCorreo(TipoCorreo.OfertaAceptada, sale.user, sale.product)                    
                         }
                         
-                        
-
 
                         res.status(201).json({
                             ok: true,
                             sale: saleUpdate
-
                         })
 
                     }).catch((err: Error) => {
