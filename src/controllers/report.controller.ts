@@ -167,6 +167,15 @@ export class ReportController {
                 sheet_name = "Subastas Pagadas"
                 break;    
 
+            case Status.Rezagado:
+                headers= [
+                    { header: 'Código',                 key: 'id'},                    
+                    { header: 'Producto',               key: 'product_name'} ,
+                    { header: 'Descripción',            key: 'description'} ,                    
+                    { header: 'Fecha de finalización',  key: 'deadline'} ,
+                ]
+                sheet_name = "Subastas Rezagadas"
+                break;  
             default:
                 break;
         }
