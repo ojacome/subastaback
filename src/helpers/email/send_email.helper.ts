@@ -112,7 +112,7 @@ export class Correo {
         
         let userAdmin: any = await getRepository(User).findOne({ isAdmin: true })
         
-        let body = new BodyContact(user.name, user.email, user.message)
+        let body = new BodyContact(user.name, user.email, user.message, user.phone)
         let mailOptions = getMailOptions(userAdmin.email, `MENSAJE SOBRE VOLUNTARIADO DE ${user.name}`, body.html)   
         
 

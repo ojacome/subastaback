@@ -610,15 +610,15 @@ export class UserController extends Repository<User>  {
      */
     public async  contact (req: Request, res: Response) {               
                                 
-		let {name, email, message} = req.body;		
+		let {name, email, message, phone} = req.body;		
              
         
 
         //validaciones
-        if(isEmpty(name) || isEmpty(email) || isEmpty(message)){
+        if(isEmpty(name) || isEmpty(email) || isEmpty(message) || isEmpty(phone)){
             return res.status(400).json({
                 ok: false,
-                message: 'Los campos nombre, email y el mensaje son requeridos.',            
+                message: 'Los campos nombre, telefono, email y el mensaje son requeridos.',            
             });    
         }
 
@@ -634,7 +634,8 @@ export class UserController extends Repository<User>  {
             let user = {
                 name,
                 email,
-                message
+                message,
+                phone
             }            
             
             enviarCorreo(TipoCorreo.Contact, user)

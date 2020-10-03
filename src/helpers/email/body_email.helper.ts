@@ -348,7 +348,8 @@ export class BodyContact {
     constructor(
         private name: string,
         private email: string,
-        private message: string
+        private message: string,
+        private phone: string
     ) {
 
         this.getHtml()
@@ -394,6 +395,10 @@ export class BodyContact {
                         </p>
 
                         <p>
+                            <span class="negrita" style="font-weight: bold;">Teléfono:</span> ${this.phone}
+                        </p>
+
+                        <p>
                             <span class="negrita" style="font-weight: bold;">Mensaje:</span> ${this.message}
                         </p>
 
@@ -409,7 +414,7 @@ export class BodyContact {
                             <a href="http:localhost:4200">sitio web</a>
                             y nuestra red social
                             <a href="https://www.facebook.com/fundacionfeyaccion/">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/1200px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook f logo (2019).svg" height="15px" width="15px">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/1200px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook" style="height: 15px; width: 15px;">
                             </a>
                         </p>
 
