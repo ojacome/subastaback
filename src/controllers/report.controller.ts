@@ -75,6 +75,7 @@ export class ReportController {
             .select("sale.id","id")
             .addSelect("sale.total","total")        
             .addSelect("sale.deadline","deadline")
+            .addSelect("sale.deadline_to_pay","deadline_to_pay")
             .addSelect("sale.updatedAt","fecha_pago")   
             .addSelect("user.fullName","user_name")
             .addSelect("user.email","email")
@@ -147,7 +148,7 @@ export class ReportController {
                     { header: 'Producto',               key: 'product_name'} ,
                     { header: 'Descripción',            key: 'description'} ,
                     { header: 'Valor a pagar',                 key: 'total'} ,
-                    { header: 'Fecha de aprobación',    key: 'fecha_pago'} ,
+                    { header: 'Fecha límite de pago',    key: 'deadline_to_pay'} ,
                 ]
                 sheet_name = "Subastas Finalizadas"
                 break;

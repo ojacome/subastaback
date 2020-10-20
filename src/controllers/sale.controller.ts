@@ -6,7 +6,7 @@ import { Product } from "../models/product.model";
 import { validate, isNotEmpty } from "class-validator";
 import { isOferta, enviarCorreo, TipoCorreo } from "../helpers/sale.helper";
 import { Correo } from "../helpers/email/send_email.helper";
-import { obtenerFechaLimite } from "../helpers/time/time.helper";
+import { obtenerFechaLimite, sumarDias } from "../helpers/time/time.helper";
 
 
 
@@ -501,7 +501,10 @@ export class SaleController extends Repository<Sale>  {
                 sale.product = sale.product;
                 sale.user = sale.user;
                 sale.updatedByUser = usuario.id;
+                if(status === Status.Finalizado)
+                    sale.deadline_to_pay = sumarDias(new Date(), 2);   
 
+                
                 
                 //Validaciones
                 const errorsSale = await validate(sale);

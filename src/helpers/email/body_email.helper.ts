@@ -40,6 +40,9 @@ export class BodyClient {
                             <p>
                                 Tu oferta realizada al producto ${this.nameProduct.toUpperCase()} fue aceptada da clic en el botón de abajo para que puedas pagar el valor del mismo
                             </p>
+                            <p>
+                                Tienes 2 días para realizar el pago, luego de ese tiempo la aprobación de tu oferta puede ser reversada, cualquier duda contactarnos.
+                            </p>
                             <a href="${CLIENT_SERVERS[0]}/#/cart" class="boton_personalizado" style="text-decoration: none;padding: 10px;font-weight: 600;font-size: 16px;color: #ffffff;background-color: #1883ba;border-radius: 6px;">
                                 Ver Detalles
                             </a>
@@ -64,7 +67,7 @@ export class BodyClient {
                                 <a href="${CLIENT_SERVERS[0]}">sitio web</a>
                                 y nuestra red social
                                 <a href="https://www.facebook.com/fundacionfeyaccion/">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/1200px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook f logo (2019).svg" height="15px" width="15px">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/1200px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook" style="height: 15px; width: 15px;">
                                 </a>
                             </p>
             
@@ -169,7 +172,7 @@ export class BodyAdminPay {
                                 <a href="http:localhost:4200">sitio web</a>
                                 y nuestra red social
                                 <a href="https://www.facebook.com/fundacionfeyaccion/">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/1200px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook f logo (2019).svg" height="15px" width="15px">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/1200px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook" style="height: 15px; width: 15px;">
                                 </a>
                             </p>
 
@@ -252,7 +255,7 @@ export class BodyFortgotPass {
                         <a href="http:localhost:4200">sitio web</a>
                         y nuestra red social
                         <a href="https://www.facebook.com/fundacionfeyaccion/">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/1200px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook f logo (2019).svg" height="15px" width="15px">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/1200px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook" style="height: 15px; width: 15px;">
                         </a>
                     </p>
 
@@ -326,7 +329,7 @@ export class BodyNuevaOferta {
                         <a href="${CLIENT_SERVERS[0]}">sitio web</a>
                         y nuestra red social
                         <a href="https://www.facebook.com/fundacionfeyaccion/">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/1200px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook f logo (2019).svg" height="15px" width="15px">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/1200px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook" style="height: 15px; width: 15px;">
                         </a>
                     </p>
 
@@ -496,7 +499,7 @@ export class BodyEmailVerification {
                             <a href="http:localhost:4200">sitio web</a>
                             y nuestra red social
                             <a href="https://www.facebook.com/fundacionfeyaccion/">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/1200px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook f logo (2019).svg" height="15px" width="15px">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/1200px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook" style="height: 15px; width: 15px;">
                             </a>
                         </p>
 
